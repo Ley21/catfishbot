@@ -1,0 +1,16 @@
+---
+goal_name: festive keysanity - DO NOT RECORD
+festive: true
+settings:
+  item_placement: advanced
+  dungeon_items: full
+  accessibility: items
+  hints: 'off'
+  mode: 'open'
+  weapons: randomized
+  item:
+    pool: normal
+    functionality: normal
+  tournament: true
+  spoilers: 'off'
+  lang: en
