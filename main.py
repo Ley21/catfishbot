@@ -140,46 +140,35 @@ async def generate_seed(message):
 
     present = message_parts[1]
     present_path = f'presets/alttpr/{present}.yaml'
-    custom_json = f'presets/alttpr/{present}.json'
-    if not Path(present_path).is_file() and not Path(custom_json).is_file():
+    if not Path(present_path).is_file():
         await message.channel.send('Preset is not existing.')
         return
     await message.add_reaction('⌚')
+    
+    preset_dict = {}
+    with open(present_path, 'r') as stream:
+        try:
+            preset_dict = yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            print(exc)
+            return
+    settings = preset_dict['settings']
+    settings['hints'] = 'off'
+    settings['tournament'] = False
+    settings['spoilers'] = 'on'
+    settings['allow_quickswap'] = True
 
-    if Path(present_path).is_file():
-        preset_dict = {}
-        with open(present_path, 'r') as stream:
-            try:
-                preset_dict = yaml.safe_load(stream)
-            except yaml.YAMLError as exc:
-                print(exc)
-                return
-        settings = preset_dict['settings']
-        settings['hints'] = 'off'
-        settings['tournament'] = False
-        settings['spoilers'] = 'on'
-        settings['allow_quickswap'] = True
+    if preset_dict.get('customizer', False):
+        if 'l' not in settings:
+            settings['l'] = {}
+        for i in preset_dict.get('forced_locations', {}):
+            location = random.choice(
+                [l for l in i['locations'] if l not in settings['l']])
+            settings['l'][location] = i['item']
 
-        if preset_dict.get('customizer', False):
-            if 'l' not in settings:
-                settings['l'] = {}
-            for i in preset_dict.get('forced_locations', {}):
-                location = random.choice(
-                    [l for l in i['locations'] if l not in settings['l']])
-                settings['l'][location] = i['item']
-
-        seed = await pyz3r.alttpr(
-            settings=settings,
-            customizer=preset_dict.get('customizer', False))
-
-    if Path(custom_json).is_file():
-        f = open(custom_json, "r")
-        customizer_settings = json.loads(f.read())
-        f.close()
-        settings = pyz3r.customizer.convert2settings(
-            customizer_save=customizer_settings, tournament=False)
-        seed = await pyz3r.alttpr(
-            settings=settings)
+    seed = await pyz3r.alttpr(
+        settings=settings,
+        customizer=preset_dict.get('customizer', False))
 
     emojis = message.guild.emojis
     embed = await get_embed(emojis, seed)
