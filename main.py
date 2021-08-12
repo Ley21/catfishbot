@@ -6,16 +6,53 @@ import yaml
 from os import walk
 import html2markdown
 import datetime
+import json
 
 client = discord.Client()
 
-async def get_embed(seed):
+emoji_code_map = {
+    'Bow': 'Bow',
+    'Boomerang': 'Boomerang',
+    'Hookshot': 'Hookshot',
+    'Bombs': 'Bombs',
+    'Mushroom': 'Mushroom',
+    'Magic Powder': 'Magic_Powder',
+    'Ice Rod': 'Ice_rod',
+    'Pendant': 'Pendant_of_courage',
+    'Bombos': 'Medallion_Bombos',
+    'Ether': 'Medallion_Ether',
+    'Quake': 'Medallion_Quake',
+    'Lamp': 'Lantern',
+    'Hammer': 'Hammer',
+    'Shovel': 'Shovel',
+    'Flute': 'Ocarina',
+    'Bugnet': 'Bugnet',
+    'Book': 'Book',
+    'Empty Bottle': 'Bottle_Empty',
+    'Green Potion': 'Bottle_Green_Potion',
+    'Somaria': 'Cane_Somaria',
+    'Cape': 'Cape',
+    'Mirror': 'Mirror',
+    'Boots': 'Pegasus_Shoes',
+    'Gloves': 'Power_Glove',
+    'Flippers': 'Flippers',
+    'Moon Pearl': 'Moon_Pearl',
+    'Shield': 'Mirror_Shield',
+    'Tunic': 'Tunic',
+    'Heart': 'Heart_Container',
+    'Map': 'Map',
+    'Compass': 'Compass',
+    'Big Key': 'Big_Key'
+}
+
+
+async def get_embed(emojis, seed):
     settings_map = await seed.randomizer_settings()
-    meta = seed.data['spoiler'].get('meta',{})
+    meta = seed.data['spoiler'].get('meta', {})
     embed = discord.Embed(
-        title=meta.get('name','Requested Seed'), 
+        title=meta.get('name', 'Requested Seed'),
         description=html2markdown.convert(
-                meta.get('notes', '')) ,
+            meta.get('notes', '')),
         color=discord.Colour.dark_green(),
         timestamp=datetime.datetime.fromisoformat(seed.data['generated']))
     if meta.get('spoilers', 'off') == "mystery":
@@ -36,14 +73,14 @@ async def get_embed(seed):
             embed.add_field(
                 name='Settings',
                 value=(f"**Item Placement:** {settings_map['item_placement'][meta['item_placement']]}\n"
-                        f"**Dungeon Items:** {settings_map['dungeon_items'][meta['dungeon_items']]}\n"
-                        f"**Accessibility:** {settings_map['accessibility'][meta['accessibility']]}\n"
-                        f"**World State:** {settings_map['world_state'][meta['mode']]}\n"
-                        f"**Hints:** {meta['hints']}\n"
-                        f"**Swords:** {settings_map['weapons'][meta['weapons']]}\n"
-                        f"**Item Pool:** {settings_map['item_pool'][meta['item_pool']]}\n"
-                        f"**Item Functionality:** {settings_map['item_functionality'][meta['item_functionality']]}"
-                        ),
+                       f"**Dungeon Items:** {settings_map['dungeon_items'][meta['dungeon_items']]}\n"
+                       f"**Accessibility:** {settings_map['accessibility'][meta['accessibility']]}\n"
+                       f"**World State:** {settings_map['world_state'][meta['mode']]}\n"
+                       f"**Hints:** {meta['hints']}\n"
+                       f"**Swords:** {settings_map['weapons'][meta['weapons']]}\n"
+                       f"**Item Pool:** {settings_map['item_pool'][meta['item_pool']]}\n"
+                       f"**Item Functionality:** {settings_map['item_functionality'][meta['item_functionality']]}"
+                       ),
                 inline=False
             )
         else:
@@ -72,7 +109,7 @@ async def get_embed(seed):
                 value="**World State:** {mode}\n**Entrance Shuffle:** {entrance}\n**Boss Shuffle:** {boss}\n**Enemy Shuffle:** {enemy}\n**Pot Shuffle:** {pot}\n**Hints:** {hints}".format(
                     mode=settings_map['world_state'][meta['mode']],
                     entrance=settings_map['entrance_shuffle'][meta['shuffle']
-                                                                ] if 'shuffle' in meta else "None",
+                                                              ] if 'shuffle' in meta else "None",
                     boss=settings_map['boss_shuffle'][meta['enemizer.boss_shuffle']],
                     enemy=settings_map['enemy_shuffle'][meta['enemizer.enemy_shuffle']],
                     pot=meta.get('enemizer.pot_shuffle', 'off'),
@@ -89,9 +126,11 @@ async def get_embed(seed):
                     health=settings_map['enemy_health'][meta['enemizer.enemy_health']],
                 ),
                 inline=True)
-    embed.add_field(name='File Select Code', value='/'.join(seed.code), inline=False)
+    embed.add_field(name='File Select Code', value=build_file_select_code(seed,
+                                                                          emojis=emojis), inline=False)
     embed.add_field(name='Permalink', value=seed.url, inline=False)
     return embed
+
 
 async def generate_seed(message):
     message_parts = message.content.split(" ")
@@ -101,59 +140,84 @@ async def generate_seed(message):
 
     present = message_parts[1]
     present_path = f'presets/alttpr/{present}.yaml'
-    if not Path(present_path).is_file():
+    custom_json = f'presets/alttpr/{present}.json'
+    if not Path(present_path).is_file() and not Path(custom_json).is_file():
         await message.channel.send('Preset is not existing.')
         return
-    preset_dict = {}
-    with open(present_path, 'r') as stream:
-        try:
-            preset_dict = yaml.safe_load(stream)
-        except yaml.YAMLError as exc:
-            print(exc)                
-            return
-    settings = preset_dict['settings']    
-    settings['hints'] = 'off'
-    settings['tournament'] = False
-    settings['spoilers'] = 'on'
-    settings['allow_quickswap'] = True
+    await message.add_reaction('⌚')
 
-    if preset_dict.get('customizer', False):
-        if 'l' not in settings:
-            settings['l'] = {}
-        for i in preset_dict.get('forced_locations', {}):
-            location = random.choice([l for l in i['locations'] if l not in settings['l']])
-            settings['l'][location] = i['item']
+    if Path(present_path).is_file():
+        preset_dict = {}
+        with open(present_path, 'r') as stream:
+            try:
+                preset_dict = yaml.safe_load(stream)
+            except yaml.YAMLError as exc:
+                print(exc)
+                return
+        settings = preset_dict['settings']
+        settings['hints'] = 'off'
+        settings['tournament'] = False
+        settings['spoilers'] = 'on'
+        settings['allow_quickswap'] = True
+
+        if preset_dict.get('customizer', False):
+            if 'l' not in settings:
+                settings['l'] = {}
+            for i in preset_dict.get('forced_locations', {}):
+                location = random.choice(
+                    [l for l in i['locations'] if l not in settings['l']])
+                settings['l'][location] = i['item']
+
+        seed = await pyz3r.alttpr(
+            settings=settings,
+            customizer=preset_dict.get('customizer', False))
+
+    if Path(custom_json).is_file():
+        f = open(custom_json, "r")
+        customizer_settings = json.loads(f.read())
+        f.close()
+        settings = pyz3r.customizer.convert2settings(
+            customizer_save=customizer_settings, tournament=False)
+        seed = await pyz3r.alttpr(
+            settings=settings)
+
+    emojis = message.guild.emojis
+    embed = await get_embed(emojis, seed)
+    message_send = await message.reply(embed=embed)
+
+    await message.add_reaction('✅')
+    await message.remove_reaction('⌚', message_send.author)
 
 
-    
-    seed = await pyz3r.alttpr(
-        settings=settings,
-        customizer=preset_dict.get('customizer', False))
-    embed = await get_embed(seed)
-    await message.reply(embed=embed)
+def build_file_select_code(seed, emojis=None):
+    if emojis:
+        emoji_list = list(map(lambda x: str(discord.utils.get(
+            emojis, name=emoji_code_map[x])), seed.code))
+        return ' '.join(emoji_list) + ' (' + '/'.join(seed.code) + ')'
+    else:
+        return '/'.join(seed.code)
+
 
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
+
 
 @client.event
 async def on_message(message):
     if message.author == client.user:
         return
 
-    if message.content.startswith('$hello'):
-        await message.channel.send('Hello!')
-
-    if message.content.startswith('$seed'):
+    if message.content.startswith('!seed') or message.content.startswith('$seed'):
         await generate_seed(message)
 
-    if message.content.startswith('$presets'):
-        response = ""      
+    if message.content.startswith('!presets') or message.content.startswith('$presets'):
+        response = ""
         for (dirpath, dirnames, files) in walk("presets/alttpr"):
             count = 0
             for filename in files:
                 present_path = f'{dirpath}/{filename}'
-                present_name = filename.replace('.yaml','')
+                present_name = filename.replace('.yaml', '')
                 with open(present_path, 'r') as stream:
                     try:
                         present_data = yaml.safe_load(stream)
@@ -165,7 +229,7 @@ async def on_message(message):
                         response += "\n"
                     except yaml.YAMLError as exc:
                         print(filename)
-                        print(exc)                
+                        print(exc)
                         return
                 if count == 10:
                     await message.channel.send(response)
@@ -173,7 +237,6 @@ async def on_message(message):
                     response = ""
                 count += 1
         await message.channel.send(response)
-            
 
 
 client.run(os.getenv('DISCORD_TOKEN'))
