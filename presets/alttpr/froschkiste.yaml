@@ -429,8 +429,7 @@ settings:
   lang: en
   mode: open
   name: ''
-  notes: Gewinne das Spiel in dem man Aga1 besiegt und das Triforce aus dem Lumberjack
-    Tree holt.
+  notes: Gewinne das Spiel in dem man Aga1 besiegt und das Triforce auf der Pyramide findet.
   spoilers: 'off'
   tournament: true
   weapons: randomized
