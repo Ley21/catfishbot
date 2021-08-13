@@ -278,12 +278,6 @@ settings:
     stun:
     - auto_fill
   dungeon_items: full
-  enemizer:
-    boss_shuffle: null
-    enemy_damage: null
-    enemy_health: null
-    enemy_shuffle: none
-    pot_shuffle: 'off'
   eq:
   - PegasusBoots
   - BossHeartContainer
