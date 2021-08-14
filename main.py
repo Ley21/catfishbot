@@ -7,6 +7,12 @@ from os import walk
 import html2markdown
 import datetime
 import json
+import tempfile
+import random
+import asyncio
+import string
+import aiofiles
+from tenacity import RetryError, AsyncRetrying, stop_after_attempt, retry_if_exception_type
 
 client = discord.Client()
 
@@ -131,6 +137,78 @@ async def get_embed(emojis, seed):
     embed.add_field(name='Permalink', value=seed.url, inline=False)
     return embed
 
+async def doors(seed):
+    with tempfile.TemporaryDirectory() as tmp:
+        settings_file_path = os.path.join(tmp, "settings.json")
+        seed.hash = ''.join(random.choices(string.ascii_letters + string.digits, k=12))
+
+        seed.settings['outputpath'] = tmp
+        seed.settings['outputname'] = seed.hash
+        seed.settings['create_rom'] = True
+        seed.settings['create_spoiler'] = True
+        seed.settings['calc_playthrough'] = False
+        seed.settings['rom'] = os.environ.get('ALTTP_ROM')
+        #seed.settings['enemizercli'] = os.path.join(os.environ.get('ENEMIZER_HOME'), 'EnemizerCLI.Core')
+
+        # set some defaults we do NOT want to change ever
+        seed.settings['count'] = 1
+        seed.settings['multi'] = 1
+        seed.settings['names'] = ""
+        seed.settings['race'] = False
+        with open(settings_file_path, "w") as f:
+            json.dump(seed.settings, f)
+
+        attempts = 0
+        try:
+            async for attempt in AsyncRetrying(stop=stop_after_attempt(20), retry=retry_if_exception_type(Exception)):
+                with attempt:
+                    attempts += 1
+                    proc = await asyncio.create_subprocess_exec(
+                        'python',
+                        'DungeonRandomizer.py',
+                        '--settingsfile', settings_file_path,
+                        stdout=asyncio.subprocess.PIPE,
+                        stderr=asyncio.subprocess.PIPE,
+                        cwd=os.environ.get('DOOR_RANDO_HOME','door_rando'))
+
+                    stdout, stderr = await proc.communicate()
+
+                    if proc.returncode > 0:
+                        raise Exception(f'Exception while generating game: {stderr.decode()}')
+
+        except RetryError as e:
+            raise e.last_attempt._exception from e
+
+        seed.attempts = attempts
+
+        seed.patch_name = "DR_" + seed.settings['outputname'] + ".bps"
+        seed.rom_name = "DR_" + seed.settings['outputname'] + ".sfc"
+        seed.spoiler_name = "DR_" + seed.settings['outputname'] + "_Spoiler.txt"
+
+        rom_path = os.path.join(tmp, seed.rom_name)
+        patch_path = os.path.join(tmp, seed.patch_name)
+        spoiler_path = os.path.join(tmp, seed.spoiler_name)
+        filps_name = 'flips.exe' if os.name == 'nt' else 'flips'
+        proc = await asyncio.create_subprocess_exec(
+            os.path.join('utils', filps_name),
+            '--create',
+            '--bps-delta',
+            os.environ.get("ALTTP_ROM"),
+            rom_path,
+            patch_path,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE)
+
+        stdout, stderr = await proc.communicate()
+
+        if proc.returncode > 0:
+            raise Exception(f'Exception while while creating patch: {stderr.decode()}')
+        async with aiofiles.open(patch_path, "rb") as f:
+            seed.patchfile = await f.read()
+        async with aiofiles.open(spoiler_path, "rb") as f:
+            seed.spoilerfile = await f.read()
+    return seed
+
 
 async def generate_seed(message):
     message_parts = message.content.split(" ")
@@ -170,9 +248,23 @@ async def generate_seed(message):
         settings=settings,
         customizer=preset_dict.get('customizer', False))
 
+    if preset_dict['doors']:
+        seed = await doors(seed)
     emojis = message.guild.emojis
     embed = await get_embed(emojis, seed)
     message_send = await message.reply(embed=embed)
+
+    with tempfile.TemporaryDirectory() as tmp:
+        patch_path = os.path.join(tmp, seed.patch_name)
+        spoiler_path = os.path.join(tmp, seed.spoiler_name)
+        if seed.patchfile:
+            async with aiofiles.open(patch_path, "wb") as f:
+                await f.write(seed.patchfile)
+            await message.channel.send(file=discord.File(patch_path))
+        if seed.spoilerfile:
+            async with aiofiles.open(spoiler_path, "wb") as f:
+                await f.write(seed.spoilerfile)
+            await message.channel.send(file=discord.File(spoiler_path))
 
     await message.add_reaction('✅')
     await message.remove_reaction('⌚', message_send.author)

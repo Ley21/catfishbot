@@ -3,3 +3,6 @@ venv/**
 docker-compose.yml
 create_customizer_preset.py
 presets/json/**
+door_rando/**
+.env
+rom/**
