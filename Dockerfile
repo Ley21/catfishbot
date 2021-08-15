@@ -1,6 +1,8 @@
 FROM python:3.9
-COPY Pipfile Pipfile.lock
 RUN pip install pipenv
+ENV PROJECT_DIR /usr/local/src/catfishbot
+WORKDIR ${PROJECT_DIR}
+COPY Pipfile Pipfile.lock ${PROJECT_DIR}/
 RUN pipenv install --system --deploy
-COPY . .
+COPY . ${PROJECT_DIR}/
 CMD ["python","main.py"]
