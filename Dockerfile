@@ -1,5 +1,5 @@
 FROM python:3.9
-COPY requirements.txt .
+COPY Pipfile Pipfile.lock
 RUN pip install pipenv
 RUN pipenv install --system --deploy
 COPY . .
