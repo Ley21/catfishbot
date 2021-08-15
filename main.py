@@ -248,23 +248,24 @@ async def generate_seed(message):
         settings=settings,
         customizer=preset_dict.get('customizer', False))
 
-    if preset_dict['doors']:
+    if 'doors' in preset_dict.keys() and preset_dict['doors']:
         seed = await doors(seed)
     emojis = message.guild.emojis
     embed = await get_embed(emojis, seed)
     message_send = await message.reply(embed=embed)
 
-    with tempfile.TemporaryDirectory() as tmp:
-        patch_path = os.path.join(tmp, seed.patch_name)
-        spoiler_path = os.path.join(tmp, seed.spoiler_name)
-        if seed.patchfile:
-            async with aiofiles.open(patch_path, "wb") as f:
-                await f.write(seed.patchfile)
-            await message.channel.send(file=discord.File(patch_path))
-        if seed.spoilerfile:
-            async with aiofiles.open(spoiler_path, "wb") as f:
-                await f.write(seed.spoilerfile)
-            await message.channel.send(file=discord.File(spoiler_path))
+    if 'doors' in preset_dict.keys() and preset_dict['doors']:
+        with tempfile.TemporaryDirectory() as tmp:
+            patch_path = os.path.join(tmp, seed.patch_name)
+            spoiler_path = os.path.join(tmp, seed.spoiler_name)
+            if seed.patchfile:
+                async with aiofiles.open(patch_path, "wb") as f:
+                    await f.write(seed.patchfile)
+                await message.channel.send(file=discord.File(patch_path))
+            if seed.spoilerfile:
+                async with aiofiles.open(spoiler_path, "wb") as f:
+                    await f.write(seed.spoilerfile)
+                await message.channel.send(file=discord.File(spoiler_path))
 
     await message.add_reaction('✅')
     await message.remove_reaction('⌚', message_send.author)
