@@ -212,7 +212,7 @@ async def doors(seed):
             seed.spoilerfile = await f.read()
     return seed
 
-async def generate_seed(message):
+async def generate_seed(message, no_spoiler = False):
     message_parts = message.content.split(" ")
     if len(message_parts) != 2:
         await message.channel.send('Wrong format. Please try it again.')
@@ -234,8 +234,8 @@ async def generate_seed(message):
             return
     settings = preset_dict['settings']
     settings['hints'] = 'off'
-    settings['tournament'] = False
-    settings['spoilers'] = 'on'
+    settings['tournament'] = no_spoiler
+    settings['spoilers'] = 'off' if no_spoiler else 'on'
     settings['allow_quickswap'] = True
 
     if preset_dict.get('customizer', False):
@@ -252,6 +252,7 @@ async def generate_seed(message):
 
     if 'doors' in preset_dict.keys() and preset_dict['doors']:
         seed = await doors(seed)
+
     emojis = message.guild.emojis
     embed = await get_embed(emojis, seed)
     message_send = await message.reply(embed=embed)
@@ -329,6 +330,9 @@ async def on_message(message):
 
     if message.content.startswith('!multi') or message.content.startswith('$multi'):
         await multiworld(message)
+
+    if message.content.startswith('!nospoiler') or message.content.startswith('$nospoiler'):
+        await generate_seed(message, True)
 
     if message.content.startswith('!seed') or message.content.startswith('$seed'):
         await generate_seed(message)
