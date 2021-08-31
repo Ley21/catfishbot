@@ -13,6 +13,9 @@ import asyncio
 import string
 import aiofiles
 from tenacity import RetryError, AsyncRetrying, stop_after_attempt, retry_if_exception_type
+import requests
+import re
+import time
 
 client = discord.Client()
 
@@ -209,7 +212,6 @@ async def doors(seed):
             seed.spoilerfile = await f.read()
     return seed
 
-
 async def generate_seed(message):
     message_parts = message.content.split(" ")
     if len(message_parts) != 2:
@@ -270,6 +272,41 @@ async def generate_seed(message):
     await message.add_reaction('✅')
     await message.remove_reaction('⌚', message_send.author)
 
+async def multiworld(message):
+    base_url = "https://berserkermulti.world"
+
+    discord_files=[await f.to_file() for f in message.attachments]
+    if len(discord_files) > 0:
+        await message.add_reaction('⌚')
+        files = {"file": ("players.zip", discord_files[0].fp, "multipart/form-data")}        
+        response = requests.post(f'{base_url}/generate',files=files, allow_redirects = False)    
+        
+        wait_suburl = re.findall('href="(.*)"', response.text)[0]
+        wait_response = requests.get(f'{base_url}{wait_suburl}', allow_redirects = False)        
+        suburl = re.findall('href="(.*)"', wait_response.text)[0]
+        counter = 0
+        while('/seed/' not in suburl and counter < 300):
+            time.sleep(2)
+            wait_response = requests.get(f'{base_url}{wait_suburl}',allow_redirects = False)
+            suburl = re.findall('href="(.*)"', wait_response.text)[0]
+            counter += 1
+        
+        if counter < 300:
+            seed = suburl.replace('/seed/','')
+            response = requests.get(f'{base_url}/new_room/{seed}',allow_redirects = False)
+            room = re.findall('href="(.*)"', response.text)[0]
+            
+            await message.author.send(f'Multiworld Seed Info: {base_url}{suburl}')
+            message_send = await message.reply(f'Multiworld: {base_url}{room}')
+            await message.add_reaction('✅')
+            await message.remove_reaction('⌚', message_send.author)        
+            return
+
+    message_send = await message.reply('Multiworld could not be generated.')
+    await message.add_reaction('❌')
+    await message.remove_reaction('⌚', message_send.author)
+    return
+    
 
 def build_file_select_code(seed, emojis=None):
     if emojis:
@@ -289,6 +326,9 @@ async def on_ready():
 async def on_message(message):
     if message.author == client.user:
         return
+
+    if message.content.startswith('!multi') or message.content.startswith('$multi'):
+        await multiworld(message)
 
     if message.content.startswith('!seed') or message.content.startswith('$seed'):
         await generate_seed(message)

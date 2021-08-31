@@ -6,3 +6,4 @@ presets/json/**
 door_rando/**
 .env
 rom/**
+.idea/**
