@@ -55,7 +55,7 @@ emoji_code_map = {
 }
 
 
-async def get_embed(emojis, seed):
+async def get_embed(emojis, seed, mystery = False):
     settings_map = await seed.randomizer_settings()
     meta = seed.data['spoiler'].get('meta', {})
     embed = discord.Embed(
@@ -64,7 +64,7 @@ async def get_embed(emojis, seed):
             meta.get('notes', '')),
         color=discord.Colour.dark_green(),
         timestamp=datetime.datetime.fromisoformat(seed.data['generated']))
-    if meta.get('spoilers', 'off') == "mystery":
+    if mystery:
         embed.add_field(
             name='Mystery Game',
             value="No meta information is available for this game.",
@@ -308,6 +308,37 @@ async def multiworld(message):
     await message.remove_reaction('⌚', message_send.author)
     return
     
+async def mystery(message):
+    message_parts = message.content.split(" ")
+    if len(message_parts) < 1:
+        await message.channel.send('Wrong format. Please try it again.')
+        return
+    weights_file = 'weighted'
+    weights_path = f'weights/{weights_file}.yaml' 
+    if len(message_parts) >= 2:
+        weights_file = message_parts[1].lower()
+        weights_path = f'weights/{weights_file}.yaml'
+        if not Path(weights_path).is_file():
+            await message.channel.send('Weight is not existing.')
+            return
+    await message.add_reaction('⌚')
+    weights = {}
+    with open(weights_path, 'r') as stream:
+        try:
+            weights = yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            print(exc)
+            return
+    
+    settings = pyz3r.mystery.generate_random_settings(weights)
+    
+    seed = await pyz3r.alttpr(settings=settings)
+    emojis = message.guild.emojis
+    embed = await get_embed(emojis, seed, True)
+    message_send = await message.reply(embed=embed)
+
+    await message.add_reaction('✅')
+    await message.remove_reaction('⌚', message_send.author)
 
 def build_file_select_code(seed, emojis=None):
     if emojis:
@@ -364,5 +395,7 @@ async def on_message(message):
                 count += 1
         await message.channel.send(response)
 
+    if message.content.startswith('!mystery') or message.content.startswith('$mystery'):
+        await mystery(message)
 
 client.run(os.getenv('DISCORD_TOKEN'))
