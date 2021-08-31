@@ -27,7 +27,7 @@ emoji_code_map = {
     'Mushroom': 'Mushroom',
     'Magic Powder': 'Magic_Powder',
     'Ice Rod': 'Ice_rod',
-    'Pendant': 'Pendant_of_courage',
+    'Pendant': 'Pendant_of_Courage',
     'Bombos': 'Medallion_Bombos',
     'Ether': 'Medallion_Ether',
     'Quake': 'Medallion_Quake',
@@ -64,7 +64,7 @@ async def get_embed(emojis, seed, mystery = False):
             meta.get('notes', '')),
         color=discord.Colour.dark_green(),
         timestamp=datetime.datetime.fromisoformat(seed.data['generated']))
-    if mystery:
+    if meta.get('spoilers', 'off') == "mystery":
         embed.add_field(
             name='Mystery Game',
             value="No meta information is available for this game.",
@@ -330,9 +330,9 @@ async def mystery(message):
             print(exc)
             return
     
-    settings = pyz3r.mystery.generate_random_settings(weights)
+    settings, customizer = pyz3r.mystery.generate_random_settings(weights)
     
-    seed = await pyz3r.alttpr(settings=settings)
+    seed = await pyz3r.alttpr(settings=settings, customizer=customizer)
     emojis = message.guild.emojis
     embed = await get_embed(emojis, seed, True)
     message_send = await message.reply(embed=embed)
