@@ -218,7 +218,7 @@ async def generate_seed(message):
         await message.channel.send('Wrong format. Please try it again.')
         return
 
-    present = message_parts[1]
+    present = message_parts[1].lower()
     present_path = f'presets/alttpr/{present}.yaml'
     if not Path(present_path).is_file():
         await message.channel.send('Preset is not existing.')
