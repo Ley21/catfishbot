@@ -1,0 +1,173 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2021-09-27 14:36+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=cp1252\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: .\catfish_discord\cogs\alttprdefault.py:19
+#: .\catfish_discord\cogs\alttprdefault.py:20
+msgid "Generate a seed from preset."
+msgstr ""
+
+#: .\catfish_discord\cogs\alttprdefault.py:32
+#: .\catfish_discord\cogs\alttprdefault.py:33
+msgid "Generate a seed from preset without an spoiler log."
+msgstr ""
+
+#: .\catfish_discord\cogs\alttprdefault.py:44
+#: .\catfish_discord\cogs\alttprdefault.py:45
+msgid "Generate a mystery seed."
+msgstr ""
+
+#: .\catfish_discord\cogs\alttprdefault.py:56
+#: .\catfish_discord\cogs\alttprdefault.py:57
+msgid "Generate a multiworld game."
+msgstr ""
+
+#: .\catfish_discord\cogs\alttprdefault.py:67
+msgid "Multiworld Seed Information"
+msgstr ""
+
+#: .\catfish_discord\cogs\alttprdefault.py:68
+msgid "Multiworld Room"
+msgstr ""
+
+#: .\catfish_discord\cogs\alttprdefault.py:71
+msgid "Multiworld could not be generated."
+msgstr ""
+
+#: .\catfish_discord\util\alttpr_disord.py:51
+msgid "Requested Seed"
+msgstr ""
+
+#: .\catfish_discord\util\alttpr_disord.py:58
+msgid "Mystery Game"
+msgstr ""
+
+#: .\catfish_discord\util\alttpr_disord.py:59
+msgid "No meta information is available for this game."
+msgstr ""
+
+#: .\catfish_discord\util\alttpr_disord.py:62
+#: .\catfish_discord\util\alttpr_disord.py:73
+#: .\catfish_discord\util\alttpr_disord.py:85
+#: .\catfish_discord\util\alttpr_disord.py:87
+msgid "Item Placement"
+msgstr ""
+
+#: .\catfish_discord\util\alttpr_disord.py:63
+#: .\catfish_discord\util\alttpr_disord.py:86
+msgid "Glitches Required"
+msgstr ""
+
+#: .\catfish_discord\util\alttpr_disord.py:68
+msgid "Festive Randomizer"
+msgstr ""
+
+#: .\catfish_discord\util\alttpr_disord.py:69
+msgid "This game is a festive randomizer. Spooky!"
+msgstr ""
+
+#: .\catfish_discord\util\alttpr_disord.py:72
+msgid "Settings"
+msgstr ""
+
+#: .\catfish_discord\util\alttpr_disord.py:74
+#: .\catfish_discord\util\alttpr_disord.py:88
+msgid "Dungeon Items"
+msgstr ""
+
+#: .\catfish_discord\util\alttpr_disord.py:75
+#: .\catfish_discord\util\alttpr_disord.py:89
+msgid "Accessibility"
+msgstr ""
+
+#: .\catfish_discord\util\alttpr_disord.py:76
+#: .\catfish_discord\util\alttpr_disord.py:100
+msgid "World State"
+msgstr ""
+
+#: .\catfish_discord\util\alttpr_disord.py:77
+#: .\catfish_discord\util\alttpr_disord.py:105
+msgid "Hints"
+msgstr ""
+
+#: .\catfish_discord\util\alttpr_disord.py:78
+#: .\catfish_discord\util\alttpr_disord.py:109
+msgid "Swords"
+msgstr ""
+
+#: .\catfish_discord\util\alttpr_disord.py:79
+#: .\catfish_discord\util\alttpr_disord.py:110
+msgid "Item Pool"
+msgstr ""
+
+#: .\catfish_discord\util\alttpr_disord.py:80
+#: .\catfish_discord\util\alttpr_disord.py:111
+msgid "Item Functionality"
+msgstr ""
+
+#: .\catfish_discord\util\alttpr_disord.py:93
+#: .\catfish_discord\util\alttpr_disord.py:94
+msgid "Goal"
+msgstr ""
+
+#: .\catfish_discord\util\alttpr_disord.py:95
+msgid "Open Tower"
+msgstr ""
+
+#: .\catfish_discord\util\alttpr_disord.py:96
+msgid "Ganon Vulnerable"
+msgstr ""
+
+#: .\catfish_discord\util\alttpr_disord.py:99
+msgid "Gameplay"
+msgstr ""
+
+#: .\catfish_discord\util\alttpr_disord.py:101
+msgid "Entrance Shuffle"
+msgstr ""
+
+#: .\catfish_discord\util\alttpr_disord.py:102
+msgid "Boss Shuffle"
+msgstr ""
+
+#: .\catfish_discord\util\alttpr_disord.py:103
+msgid "Enemy Shuffle"
+msgstr ""
+
+#: .\catfish_discord\util\alttpr_disord.py:104
+msgid "Pot Shuffle"
+msgstr ""
+
+#: .\catfish_discord\util\alttpr_disord.py:108
+msgid "Difficulty"
+msgstr ""
+
+#: .\catfish_discord\util\alttpr_disord.py:112
+msgid "Enemy Damage"
+msgstr ""
+
+#: .\catfish_discord\util\alttpr_disord.py:113
+msgid "Enemy Health"
+msgstr ""
+
+#: .\catfish_discord\util\alttpr_disord.py:115
+msgid "File Select Code"
+msgstr ""
+
+#: .\catfish_discord\util\alttpr_disord.py:117
+msgid "Permalink"
+msgstr ""
+

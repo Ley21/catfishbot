@@ -5,4 +5,4 @@ WORKDIR ${PROJECT_DIR}
 COPY Pipfile Pipfile.lock ${PROJECT_DIR}/
 RUN pipenv install --system --deploy
 COPY . ${PROJECT_DIR}/
-CMD ["python","main.py"]
+CMD ["python","catfishbot.py"]
