@@ -4,7 +4,6 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-aiofiles = "0.7.0"
 DateTime = "4.3"
 discord = "1.7.3"
 html2markdown = "0.1.7"
