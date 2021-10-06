@@ -1,5 +1,4 @@
 import logging
-import discord
 from discord.ext import commands
 from discord.ext.commands import errors
 
@@ -7,6 +6,7 @@ discord_bot = commands.Bot(
     command_prefix="!"
 )
 
+# noinspection SpellCheckingInspection
 discord_bot.load_extension("catfish_discord.cogs.alttprdefault")
 
 
@@ -29,7 +29,7 @@ async def on_message(message):
 
     ctx = await discord_bot.get_context(message)
 
-    # replace the bot's invoke coroutine a modified version
+    # replace the bots invoke coroutine a modified version
     # this allows the bot to begin "typing" when processing a command
     if ctx.command is not None:
         discord_bot.dispatch('command', ctx)

@@ -1,6 +1,4 @@
 import os
-
-import discord
 from discord.ext import commands
 from catfish_discord.util.alttpr import get_preset, get_mystery, get_multiworld
 from catfish_discord.util.alttpr_disord import get_embed
@@ -9,6 +7,7 @@ import requests
 
 translate = gettext.translation('catfishbot', localedir='locale', fallback=True, languages=[os.getenv('LANG')])
 _ = translate.gettext
+
 
 class AlttprDefault(commands.Cog):
 
@@ -60,15 +59,16 @@ class AlttprDefault(commands.Cog):
     async def multi(self, ctx):
         if len(ctx.message.attachments) > 0:
             attachment_url = ctx.message.attachments[0].url
-            file_request = requests.get(attachment_url )
+            file_request = requests.get(attachment_url)
             multi = await get_multiworld(file_request.content)
 
             if multi is not None:
-                await ctx.author.send(_('Multiworld Seed Information')+f": {multi['seed_info_url']}")
-                await ctx.reply(_('Multiworld Room')+f": {multi['seed_info_url']}")
+                await ctx.author.send(_('Multiworld Seed Information') + f": {multi['seed_info_url']}")
+                await ctx.reply(_('Multiworld Room') + f": {multi['seed_info_url']}")
                 return
 
         await ctx.reply(_('Multiworld could not be generated.'))
+
 
 def setup(bot):
     bot.add_cog(AlttprDefault(bot))

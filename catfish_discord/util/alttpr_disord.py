@@ -68,6 +68,7 @@ async def get_embed(emojis, seed):
                 name=_('Festive Randomizer'),
                 value=_("This game is a festive randomizer. Spooky!"),
                 inline=False)
+            item_functionality = settings_map['item_functionality'][meta['item_functionality']]
             embed.add_field(
                 name=_('Settings'),
                 value=("**"+_('Item Placement')+f":** {settings_map['item_placement'][meta['item_placement']]}\n"
@@ -77,7 +78,7 @@ async def get_embed(emojis, seed):
                        "**"+_('Hints')+f":** {meta['hints']}\n"
                        "**"+_('Swords')+f":** {settings_map['weapons'][meta['weapons']]}\n"
                        "**"+_('Item Pool')+f":** {settings_map['item_pool'][meta['item_pool']]}\n"
-                       "**"+_('Item Functionality')+f":** {settings_map['item_functionality'][meta['item_functionality']]}"),
+                       "**"+_('Item Functionality')+f":** {item_functionality}"),
                 inline=False
             )
         else:
@@ -95,25 +96,28 @@ async def get_embed(emojis, seed):
                        "**"+_('Open Tower')+f":** {meta.get('entry_crystals_tower', 'unknown')}\n"
                        "**"+_('Ganon Vulnerable')+f":** {meta.get('entry_crystals_ganon', 'unknown')}"),
                 inline=True)
+            entrance_shuffled = settings_map['entrance_shuffle'][meta['shuffle']] if 'shuffle' in meta else 'None'
             embed.add_field(
                 name=_('Gameplay'),
                 value=("**"+_('World State')+f":** {settings_map['world_state'][meta['mode']]}\n"
-                       "**"+_('Entrance Shuffle')+f":** {settings_map['entrance_shuffle'][meta['shuffle']] if 'shuffle' in meta else 'None'}\n"
+                       "**"+_('Entrance Shuffle')+f":** {entrance_shuffled}\n"
                        "**"+_('Boss Shuffle')+f":** {settings_map['boss_shuffle'][meta['enemizer.boss_shuffle']]}\n"
                        "**"+_('Enemy Shuffle')+f":** {settings_map['enemy_shuffle'][meta['enemizer.enemy_shuffle']]}\n"
                        "**"+_('Pot Shuffle')+f":** {meta.get('enemizer.pot_shuffle', 'off')}\n"
                        "**"+_('Hints')+f":** {meta['hints']}"),
                 inline=True)
+            item_functionality = settings_map['item_functionality'][meta['item_functionality']]
             embed.add_field(
                 name=_('Difficulty'),
                 value=("**"+_('Swords')+f":** {settings_map['weapons'][meta['weapons']]}\n"
                        "**"+_('Item Pool')+f":** {settings_map['item_pool'][meta['item_pool']]}\n"
-                       "**"+_('Item Functionality')+f":** {settings_map['item_functionality'][meta['item_functionality']]}\n"
+                       "**"+_('Item Functionality')+f":** {item_functionality}\n"
                        "**"+_('Enemy Damage')+f":** {settings_map['enemy_damage'][meta['enemizer.enemy_damage']]}\n"
                        "**"+_('Enemy Health')+f":** {settings_map['enemy_health'][meta['enemizer.enemy_health']]}"),
                 inline=True)
-    embed.add_field(name=_('File Select Code'), value=build_file_select_code(seed,
-                                                                          emojis=emojis), inline=False)
+    embed.add_field(name=_('File Select Code'),
+                    value=build_file_select_code(seed, emojis=emojis),
+                    inline=False)
     embed.add_field(name=_('Permalink'), value=seed.url, inline=False)
     return embed
 
