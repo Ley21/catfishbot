@@ -4,6 +4,8 @@ from catfish_discord.util.alttpr import get_preset, get_mystery, get_multiworld
 from catfish_discord.util.alttpr_disord import get_embed
 import gettext
 import requests
+from catfish_discord.util.alttpr_extensions import write_progression_spoiler
+
 
 translate = gettext.translation('catfishbot', localedir='locale', fallback=True, languages=[os.getenv('LANG')])
 _ = translate.gettext
@@ -22,9 +24,11 @@ class AlttprDefault(commands.Cog):
     async def seed(self, ctx, preset, hints=False):
 
         seed = await get_preset(preset, hints=hints, spoilers="on", allow_quickswap=True)
-
+        spoiler_link = await write_progression_spoiler(seed)
         emojis = ctx.guild.emojis
         embed = await get_embed(emojis, seed)
+        embed.insert_field_at(0, name="Spoiler Log URL",
+                              value=spoiler_link, inline=False)
         await ctx.reply(embed=embed)
 
     @commands.group(
