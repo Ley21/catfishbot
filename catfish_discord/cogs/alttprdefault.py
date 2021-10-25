@@ -1,10 +1,15 @@
 import os
+import threading
+
 from discord.ext import commands
 from catfish_discord.util.alttpr import get_preset, get_mystery, get_multiworld
 from catfish_discord.util.alttpr_disord import get_embed
 import gettext
 import requests
 from catfish_discord.util.alttpr_extensions import write_progression_spoiler
+from models.race import Race, Participant
+import datetime
+import tortoise
 
 
 translate = gettext.translation('catfishbot', localedir='locale', fallback=True, languages=[os.getenv('LANG')])
@@ -12,6 +17,8 @@ _ = translate.gettext
 
 
 class AlttprDefault(commands.Cog):
+
+    threads = list()
 
     def __init__(self, bot):
         self.bot = bot
@@ -72,6 +79,83 @@ class AlttprDefault(commands.Cog):
                 return
 
         await ctx.reply(_('Multiworld could not be generated.'))
+
+    @commands.group(
+        brief=_('Create a race game.'),
+        help=_('Create a race game.'),
+        invoke_without_command=True
+    )
+    async def race(self, ctx, command, arg1=None, arg2=None):
+        if command == 'start':
+            if not arg1 or not arg2:
+                await ctx.reply(_('Missing start time or preset'))
+                return
+            races = await Race.filter(author_id=ctx.author.id,ongoing=True).all()
+            if len(races) > 0:
+                await ctx.reply(_('Please finish you old race before you start a new one. Race ID: ' + f"{races[0].id}"))
+                return
+
+            # arg1 is time if start
+            race_time = datetime.datetime.strptime(arg1, '%H:%M')
+            start_time = datetime.datetime.today().replace(hour=race_time.hour, minute=race_time.minute, second=0)
+
+            # arg2 is preset if start
+            preset = arg2
+
+            # Generate an game
+            seed = await get_preset(preset, hints=False, spoilers="off", allow_quickswap=True)
+            seed_id = seed.url.replace("https://alttpr.com/h/","")
+
+            race = await Race.create(preset=preset, seed=seed_id, author_id=ctx.author.id, author=ctx.author.name, date=start_time)
+            # delta_race_start = (start_time - datetime.datetime.now()).total_seconds() - 10
+            # delta_registration_close = delta_race_start - 600
+            #
+            # close = threading.Timer(delta_registration_close, lambda:
+            # {
+            #     await ctx.reply(_("Registration is closed."))
+            #     # todo send seed
+            # })
+            #
+            # race_start_thread = threading.Timer(delta_race_start, lambda:
+            # {
+            #     await ctx.reply("")
+            # })
+            # close.start()
+            # race_start_thread.start()
+            # self.threads.append(close)
+            # self.threads.append(race_start_thread)
+
+            await ctx.reply(_('New race is generated. Race ID: ')+f"{race.id}")
+        elif command == 'stop':
+            # arg1 is race id
+            if not arg1:
+                race = await Race.filter(author_id=ctx.author.id, ongoing=True).first()
+            else:
+                race = await Race.filter(id=arg1).first()
+            race.ongoing = False
+            await race.save()
+            await ctx.reply(_('You stopped the race with id: ') + f"{race.id}")
+
+    @commands.group(
+        brief=_('Join a race game.'),
+        help=_('Join a race game.'),
+        invoke_without_command=True
+    )
+    async def join(self, ctx, id=None):
+        races = await Race.all()
+        ongoing_races = list(filter(lambda r: r.ongoing, races))
+        if not id:
+            if len(ongoing_races) == 0:
+                await ctx.reply(_('There is currently no race ongoing'))
+                return
+            id = ongoing_races[-1].id
+        race = list(filter(lambda r: r.id == id, ongoing_races))[0]
+        try:
+            participant = await Participant.create(race=race, player_id=ctx.author.id, player=ctx.author.name)
+            await ctx.reply(
+                _('You join the race from ') + f"{race.author}" + _(" with the preset ") + f"'{race.preset}'")
+        except tortoise.exceptions.IntegrityError:
+            await ctx.reply(_('You already join the game.'))
 
 
 def setup(bot):

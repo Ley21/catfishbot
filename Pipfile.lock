@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "9f55306b7e7f38615c906e17f6da7f6f86060d2533fb09062cb48ca41792e9be"
+            "sha256": "9bed36c6fa659f99c645eb98a3f6c26af53cae817c31d698ce86400e1fedc0bb"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -92,6 +92,14 @@
             ],
             "markers": "python_version >= '3.6'",
             "version": "==0.8.0"
+        },
+        "aiosqlite": {
+            "hashes": [
+                "sha256:6c49dc6d3405929b1d08eeccc72306d3677503cc5e5e43771efc1e00232e8231",
+                "sha256:f0e6acc24bc4864149267ac82fb46dfb3be4455f99fe21df82609cc6e6baee51"
+            ],
+            "markers": "python_version >= '3.6'",
+            "version": "==0.17.0"
         },
         "async-timeout": {
             "hashes": [
@@ -195,6 +203,13 @@
             "markers": "python_version >= '3'",
             "version": "==3.3"
         },
+        "iso8601": {
+            "hashes": [
+                "sha256:36532f77cc800594e8f16641edae7f1baf7932f05d8e508545b95fc53c6dc85b",
+                "sha256:906714829fedbc89955d52806c903f2332e3948ed94e31e85037f9e0226b8376"
+            ],
+            "version": "==0.1.16"
+        },
         "jmespath": {
             "hashes": [
                 "sha256:b85d0567b8666149a93172712e68920734333c0ce7e89b78b3e987f71e5ed4f9",
@@ -280,6 +295,14 @@
             ],
             "markers": "python_version >= '3.6'",
             "version": "==5.2.0"
+        },
+        "pypika-tortoise": {
+            "hashes": [
+                "sha256:6831d0a56e5e0ecefac3307dd9bdb3e5073fdac5d617401601d3a6713e059f3c",
+                "sha256:860020094e01058ea80602c90d4a843d0a42cffefcf4f3cb1a7f2c18b880c638"
+            ],
+            "markers": "python_version >= '3.7' and python_version < '4.0'",
+            "version": "==0.1.1"
         },
         "python-bps-continued": {
             "hashes": [
@@ -394,6 +417,14 @@
             ],
             "index": "pypi",
             "version": "==8.0.1"
+        },
+        "tortoise-orm": {
+            "hashes": [
+                "sha256:1f5020e9964d32a4d6ed685d466b5d7285de328a63ee92ee988c1e4baf8fefbf",
+                "sha256:f18c41bb83be4748a6ca259ed7309ca954b35f5790971824bbc79a11d2b1ef3b"
+            ],
+            "index": "pypi",
+            "version": "==0.17.8"
         },
         "typing-extensions": {
             "hashes": [

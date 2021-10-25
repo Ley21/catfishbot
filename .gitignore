@@ -7,3 +7,4 @@ door_rando/**
 .env
 rom/**
 .idea/**
+db.*

@@ -12,6 +12,7 @@ pyz3r = "5.5.2"
 requests = "2.26.0"
 tenacity = "8.0.1"
 aioboto3 = "*"
+tortoise-orm = "*"
 
 [dev-packages]
 
