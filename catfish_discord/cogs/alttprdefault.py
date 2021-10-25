@@ -21,7 +21,7 @@ class AlttprDefault(commands.Cog):
         help=_('Generate a seed from preset.'),
         invoke_without_command=True
     )
-    async def seed(self, ctx, preset, hints=False):
+    async def spoiler(self, ctx, preset, hints=False):
 
         seed = await get_preset(preset, hints=hints, spoilers="on", allow_quickswap=True)
         spoiler_link = await write_progression_spoiler(seed)
@@ -36,7 +36,7 @@ class AlttprDefault(commands.Cog):
         help=_('Generate a seed from preset without an spoiler log.'),
         invoke_without_command=True
     )
-    async def nospoiler(self, ctx, preset, hints=False):
+    async def seed(self, ctx, preset, hints=False):
         seed = await get_preset(preset, hints=hints, spoilers="off", allow_quickswap=True)
 
         emojis = ctx.guild.emojis
