@@ -1,6 +1,7 @@
 import os
 import threading
 
+import discord.ext.commands
 from discord.ext import commands
 from catfish_discord.util.alttpr import get_preset, get_mystery, get_multiworld
 from catfish_discord.util.alttpr_disord import get_embed
@@ -85,8 +86,10 @@ class AlttprDefault(commands.Cog):
         help=_('Create a race game.'),
         invoke_without_command=True
     )
-    async def race(self, ctx, command, arg1=None, arg2=None):
+    async def race(self, ctx, command, arg1=None, arg2=None, arg3=None):
         if command == 'start':
+            # todo Anmeldung
+            # todo eher als 10 min vorher
             if not arg1 or not arg2:
                 await ctx.reply(_('Missing start time or preset'))
                 return
@@ -107,24 +110,18 @@ class AlttprDefault(commands.Cog):
             seed_id = seed.url.replace("https://alttpr.com/h/","")
 
             race = await Race.create(preset=preset, seed=seed_id, author_id=ctx.author.id, author=ctx.author.name, date=start_time)
-            # delta_race_start = (start_time - datetime.datetime.now()).total_seconds() - 10
-            # delta_registration_close = delta_race_start - 600
+            # delta_registration_close = (start_time - datetime.datetime.now()).total_seconds() - 600
             #
             # close = threading.Timer(delta_registration_close, lambda:
             # {
             #     await ctx.reply(_("Registration is closed."))
             #     # todo send seed
+            #     todo countdown
             # })
             #
-            # race_start_thread = threading.Timer(delta_race_start, lambda:
-            # {
-            #     await ctx.reply("")
-            # })
             # close.start()
-            # race_start_thread.start()
             # self.threads.append(close)
-            # self.threads.append(race_start_thread)
-
+            # todo: Send to creator id
             await ctx.reply(_('New race is generated. Race ID: ')+f"{race.id}")
         elif command == 'stop':
             # arg1 is race id
@@ -135,11 +132,17 @@ class AlttprDefault(commands.Cog):
             race.ongoing = False
             await race.save()
             await ctx.reply(_('You stopped the race with id: ') + f"{race.id}")
+            # todo remove role after 30 min
+        elif command == 'result':
+            # todo race results
+            print("ergebnisse")
+
 
     @commands.group(
         brief=_('Join a race game.'),
         help=_('Join a race game.'),
-        invoke_without_command=True
+        invoke_without_command=True,
+        aliases=['enter']
     )
     async def join(self, ctx, id=None):
         races = await Race.all()
@@ -156,6 +159,36 @@ class AlttprDefault(commands.Cog):
                 _('You join the race from ') + f"{race.author}" + _(" with the preset ") + f"'{race.preset}'")
         except tortoise.exceptions.IntegrityError:
             await ctx.reply(_('You already join the game.'))
+        # todo racer role
+
+    @commands.group(
+        brief=_('Join a race game.'),
+        help=_('Join a race game.'),
+        invoke_without_command=True,
+        aliases=['ff']
+    )
+    async def leave(self, ctx, id=None):
+        # todo: remove from list, only if ongoing
+        #
+        print("das")
+
+    @commands.group(
+        brief=_('Join a race game.'),
+        help=_('Join a race game.'),
+        invoke_without_command=True
+    )
+    async def done(self, ctx):
+        # todo: finish race role
+        await ctx.message.delete()
+        # todo: check if all have been finished -> close race
+        # close ->
+
+# race-anmeldung: id
+# chat: id
+# aktuelles_race: id
+# race_ergebnis: id
+# role_active_racer: id
+# role_finish_race: id
 
 
 def setup(bot):
