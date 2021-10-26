@@ -111,15 +111,17 @@ class AlttprRace(commands.Cog):
         await ctx.reply(_('New race is generated. Race ID: ') + f"{race.id}")
 
         race_channel = self.bot.get_guild(race.guild).get_channel(guild_settings.race_channel_id)
-        await race_channel.send(_('New race is generated. Race ID: ') + f"{race.id}")
+        await race_channel.send(_('New race is planned. Race ID: ') + f"{race.id} " + _(" will be started at ")+ f"{time}")
         await race_channel.send('================================')
         await race_channel.send(_("Participants:"))
 
-    async def _remove_roles(self, guild, participants, roles, delay):
+    async def _clean_participants(self, guild, participants, roles, channels, delay):
         await asyncio.sleep(delay)
         for p in participants:
             member = guild.get_member(p.player_id)
             await member.remove_roles(*roles)
+        for c in channels:
+            await self._clean_channel(c)
 
     async def _stop_race(self, race):
         task = self._tasks[race.id]
@@ -140,21 +142,23 @@ class AlttprRace(commands.Cog):
         anyone_ends = False
         if race.ongoing:
             for p in participants:
-                if not p.end_time:
+                if p.time < datetime.timedelta(days=1):
                     anyone_ends = True
                     break
 
         # Remove roles
-        asyncio.create_task(self._remove_roles(guild, participants, roles, 1800 if anyone_ends else 0))
+        channels = list()
+        channels.append(guild.get_channel(guild_settings.race_channel_id))
+        channels.append(guild.get_channel(guild_settings.race_registration_channel_id))
+        channels.append(guild.get_channel(guild_settings.race_chat_channel_id))
+        channels.append(guild.get_channel(guild_settings.race_result_channel_id))
+        asyncio.create_task(self._clean_participants(guild, participants, roles, channels, 1800 if anyone_ends else 0))
 
         race.ongoing = False
         race.finished = True
         await race.save()
 
-        await self._clean_channel(guild.get_channel(guild_settings.race_channel_id))
-        await self._clean_channel(guild.get_channel(guild_settings.race_registration_channel_id))
-        await self._clean_channel(guild.get_channel(guild_settings.race_chat_channel_id))
-        await self._clean_channel(guild.get_channel(guild_settings.race_result_channel_id))
+
 
     async def _clean_channel(self, channel):
         messages = await channel.history(limit=200).flatten()
@@ -343,7 +347,7 @@ class AlttprRace(commands.Cog):
 
         finished = await self._check_participants(race)
         if finished:
-            await self._result(race, ctx.message.channel)
+            await self._result(race, self.bot.get_guild(race.guild).get_channel(guild_settings.race_result_channel_id))
 
 
 def setup(bot):
