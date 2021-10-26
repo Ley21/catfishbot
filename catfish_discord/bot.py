@@ -1,13 +1,20 @@
 import logging
 from discord.ext import commands
 from discord.ext.commands import errors
+import discord
+
+
+intents = discord.Intents.default()
+intents.members = True
 
 discord_bot = commands.Bot(
-    command_prefix="!"
+    command_prefix="!",
+    intents=intents
 )
 
 # noinspection SpellCheckingInspection
 discord_bot.load_extension("catfish_discord.cogs.alttprdefault")
+discord_bot.load_extension("catfish_discord.cogs.alttprrace")
 
 
 @discord_bot.event
