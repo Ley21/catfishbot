@@ -203,7 +203,7 @@ class AlttprRace(commands.Cog):
         # Create race
         guild_settings = await GuildSettings.get(id=ctx.guild.id)
         race = await Race.create(preset=preset, author_id=ctx.author.id,
-                                 author=ctx.author.name, date=start_time,
+                                 author=ctx.author.display_name, date=start_time,
                                  guild=guild_settings)
 
         task = asyncio.create_task(self._start_race(race))
@@ -265,14 +265,15 @@ class AlttprRace(commands.Cog):
 
         race = await self._get_active_race(ctx)
         if race:
-            participant_tuple = await Participant.get_or_create(race=race, player_id=ctx.author.id, player=ctx.author.name)
+            participant_tuple = await Participant.get_or_create(race=race, player_id=ctx.author.id,
+                                                                player=ctx.author.display_name)
             if not participant_tuple[1]:
                 await ctx.reply(_('You already join an game.'))
                 return
             else:
                 roles = list(filter(lambda r: r.id == race.guild.race_active_role, ctx.guild.roles))
                 await ctx.author.add_roles(*roles)
-                await ctx.message.channel.send(f"# {ctx.author.name} " + _('joined the race.'))
+                await ctx.message.channel.send(f"# {ctx.author.display_name} " + _('joined the race.'))
         await ctx.message.delete()
 
     @commands.group(
@@ -297,7 +298,7 @@ class AlttprRace(commands.Cog):
                     # Remove from list
                     messages = await ctx.message.channel.history().flatten()
                     for message in messages:
-                        if message.content.startswith(f"# {ctx.author.name}"):
+                        if message.content.startswith(f"# {ctx.author.display_name}"):
                             await message.delete()
                             break
                 else:
