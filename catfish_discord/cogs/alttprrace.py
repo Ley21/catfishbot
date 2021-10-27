@@ -249,8 +249,9 @@ class AlttprRace(commands.Cog):
         pass_context=True
     )
     async def result(self, ctx, race_id):
-        race = await Race.filter(id=race_id).first()
-        await self._result(race, ctx.message.channel.id)
+        race = await Race.get_or_none(id=race_id).select_related("guild")
+        if race:
+            await self._result(race, ctx.message.channel.id)
 
     @commands.group(
         brief=_('Join a race game.'),
