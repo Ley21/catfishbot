@@ -2,6 +2,7 @@ from tortoise.models import Model
 from tortoise import fields
 from datetime import timedelta
 
+
 class Race(Model):
     id = fields.IntField(pk=True)
     preset = fields.TextField()
@@ -12,7 +13,7 @@ class Race(Model):
     finished = fields.BooleanField(default=False)
     author_id = fields.IntField()
     author = fields.TextField()
-    guild = fields.IntField()
+    guild = fields.ForeignKeyField('models.GuildSettings')
 
     def __str__(self):
         return self.id
@@ -23,7 +24,8 @@ class Participant(Model):
     player_id = fields.IntField()
     player = fields.TextField()
     end_time = fields.DatetimeField
-    time = fields.TimeDeltaField(default=timedelta(hours=99))
+    time = fields.TimeDeltaField(default=timedelta(seconds=0))
+    done = fields.BooleanField(default=False)
     resign = fields.BooleanField(default=False)
 
     class Meta:
@@ -34,7 +36,7 @@ class Participant(Model):
 
 
 class GuildSettings(Model):
-    guild = fields.IntField(pk=True)
+    id = fields.IntField(pk=True, generated=False)
     race_registration_channel_id = fields.IntField()
     race_chat_channel_id = fields.IntField()
     race_channel_id = fields.IntField()

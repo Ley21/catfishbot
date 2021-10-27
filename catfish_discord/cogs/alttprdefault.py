@@ -1,5 +1,5 @@
 import os
-
+from distutils.util import strtobool
 from discord.ext import commands
 from catfish_discord.util.alttpr import get_preset, get_mystery, get_multiworld
 from catfish_discord.util.alttpr_disord import get_embed
@@ -26,11 +26,12 @@ class AlttprDefault(commands.Cog):
     async def spoiler(self, ctx, preset, hints=False):
 
         seed = await get_preset(preset, hints=hints, spoilers="on", allow_quickswap=True)
-        spoiler_link = await write_progression_spoiler(seed)
         emojis = ctx.guild.emojis
         embed = await get_embed(emojis, seed)
-        embed.insert_field_at(0, name="Spoiler Log URL",
-                              value=spoiler_link, inline=False)
+        optimize_spoiler = strtobool(os.getenv("OPTIMIZE_SPOILER", "true"))
+        if optimize_spoiler:
+            spoiler_link = await write_progression_spoiler(seed)
+            embed.insert_field_at(0, name="Spoiler Log URL", value=spoiler_link, inline=False)
         await ctx.reply(embed=embed)
 
     @commands.group(

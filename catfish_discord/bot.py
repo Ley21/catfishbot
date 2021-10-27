@@ -15,7 +15,7 @@ discord_bot = commands.Bot(
 # noinspection SpellCheckingInspection
 discord_bot.load_extension("catfish_discord.cogs.alttprdefault")
 discord_bot.load_extension("catfish_discord.cogs.alttprrace")
-
+discord_bot.load_extension("catfish_discord.cogs.catmin")
 
 @discord_bot.event
 async def on_command(ctx):

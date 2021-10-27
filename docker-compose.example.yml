@@ -2,3 +2,5 @@ version: "3.9"
 services:
     catfishbot:
         build: .
+        volumes:
+            - ./db-data:/usr/local/src/catfishbot/database

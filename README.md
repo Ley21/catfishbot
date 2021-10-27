@@ -19,7 +19,16 @@ Set environment variables / add .env file for pipenv to use or in docker-compose
 
 - DISCORD_TOKEN / Token for you discord bot
 - ALTTP_ROM / Orginal japanisch rom to generate a game / create patch files.
-- (opational) LANG / Language to support help and commands in another language (e.g. de)
+- OPTIMIZE_SPOILER / Create a spoiler for spoiler coop games (default: true)
+
+If OPTIMIZE_SPOILER == true:
+- AWS_SPOILER_BUCKET_NAME / AWS bucket for uploading spoiler logs
+- AWS_ACCESS_KEY_ID & AWS_SECRET_ACCESS_KEY & AWS_DEFAULT_REGION / AWS credentials of IAM user to access the above bucket 
+
+
+- (optional) LANG / Language to support help and commands in another language (e.g. de)
+- (optional) TIMEZONE / set timezone (default: 'Europe/Berlin')
+- (optional) EMOJIS_GUILD_ID / emojis discord (default: dev discord)
 
 ### Native
 
