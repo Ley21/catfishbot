@@ -18,20 +18,7 @@ async def database_init():
     )
     # Generate the schema
     await Tortoise.generate_schemas()
-    # await init_dev_guild()
 
-
-# async def init_dev_guild():
-#     dev_guild_settings = {
-#             "id": 859817345743978497,
-#             "race_registration_channel_id": 902486000570339378,
-#             "race_chat_channel_id": 902486023282503682,
-#             "race_channel_id": 902486067540811797,
-#             "race_result_channel_id": 902486108833738802,
-#             "race_active_role": 902486581515014165,
-#             "race_finish_role": 902486629560774767
-#         }
-#     await GuildSettings.update_or_create(dev_guild_settings)
 
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()

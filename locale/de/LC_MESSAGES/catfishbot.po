@@ -5,46 +5,236 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2021-09-27 14:36+0200\n"
-"PO-Revision-Date: 2021-10-24 14:45+0200\n"
+"POT-Creation-Date: 2021-11-12 09:50+0100\n"
+"PO-Revision-Date: 2021-11-12 09:50+0100\n"
+"Last-Translator: \n"
 "Language-Team: \n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 "X-Generator: Poedit 3.0\n"
-"Last-Translator: \n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"Language: de\n"
 
-#: .\catfish_discord\cogs\alttprdefault.py:19
-#: .\catfish_discord\cogs\alttprdefault.py:20
+#: .\catfish_discord\cogs\alttprdefault.py:22
+#: .\catfish_discord\cogs\alttprdefault.py:23
 msgid "Generate a seed from preset."
 msgstr "Erstellt einen Seed aus einer Vorlage."
 
-#: .\catfish_discord\cogs\alttprdefault.py:32
-#: .\catfish_discord\cogs\alttprdefault.py:33
+#: .\catfish_discord\cogs\alttprdefault.py:38
+#: .\catfish_discord\cogs\alttprdefault.py:39
 msgid "Generate a seed from preset without an spoiler log."
 msgstr "Erstellt einen Seed aus einer Vorlage ohne einen Spoiler."
 
-#: .\catfish_discord\cogs\alttprdefault.py:44
-#: .\catfish_discord\cogs\alttprdefault.py:45
+#: .\catfish_discord\cogs\alttprdefault.py:50
+#: .\catfish_discord\cogs\alttprdefault.py:51
 msgid "Generate a mystery seed."
 msgstr "Erstellt ein Mystery Seed."
 
-#: .\catfish_discord\cogs\alttprdefault.py:56
-#: .\catfish_discord\cogs\alttprdefault.py:57
+#: .\catfish_discord\cogs\alttprdefault.py:62
+#: .\catfish_discord\cogs\alttprdefault.py:63
 msgid "Generate a multiworld game."
 msgstr "Erstellen eines Mutliworld Spiels."
 
-#: .\catfish_discord\cogs\alttprdefault.py:67
+#: .\catfish_discord\cogs\alttprdefault.py:73
 msgid "Multiworld Seed Information"
 msgstr "Mutliworld Seed Informationen"
 
-#: .\catfish_discord\cogs\alttprdefault.py:68
+#: .\catfish_discord\cogs\alttprdefault.py:74
 msgid "Multiworld Room"
 msgstr "Multiworld Raum"
 
-#: .\catfish_discord\cogs\alttprdefault.py:71
+#: .\catfish_discord\cogs\alttprdefault.py:77
 msgid "Multiworld could not be generated."
 msgstr "Multiworld kann nicht erstellt werden."
+
+#: .\catfish_discord\cogs\alttprrace.py:41
+msgid "== Registration is now closed, and race will start in 10 minutes. =="
+msgstr ""
+"== Die Anmeldung ist nicht mehr möglich. Das Race startet in 10 Minuten =="
+
+#: .\catfish_discord\cogs\alttprrace.py:43
+msgid "Bot is crashed and will start the game in 10 minutes."
+msgstr "Der Bot is abgestürzt und das Race wir in 10 Minuten gestartet."
+
+#: .\catfish_discord\cogs\alttprrace.py:51
+msgid ""
+"This is the seed for the upcoming race. If you finish the race, please "
+"enter !done in this channel."
+msgstr ""
+"Das ist der Seed für das aktuelle Race. Wenn du den Seed beendet hast, gib !"
+"done ein."
+
+#: .\catfish_discord\cogs\alttprrace.py:60
+msgid "- Race will start in 10 minutes -"
+msgstr "- Das Race startet in 10 Minuten -"
+
+#: .\catfish_discord\cogs\alttprrace.py:62
+msgid "- Race will start in 5 minutes -"
+msgstr "- Das Race startet in 5 Minuten -"
+
+#: .\catfish_discord\cogs\alttprrace.py:64
+msgid "- Race will start in 1 minute -"
+msgstr "- Das Race startet in einer Minute -"
+
+#: .\catfish_discord\cogs\alttprrace.py:66
+msgid "- Race will start in 30 seconds -"
+msgstr "- Das Race startet in 30 Sekunden -"
+
+#: .\catfish_discord\cogs\alttprrace.py:68
+msgid "- Race will start in 10 seconds -"
+msgstr "- Das Race startet in 10 Sekunden -"
+
+#: .\catfish_discord\cogs\alttprrace.py:70
+msgid "- Race will start in 5 seconds -"
+msgstr "- Das Race startet in 5 Sekunden -"
+
+#: .\catfish_discord\cogs\alttprrace.py:72
+msgid "- Race will start in 4 seconds -"
+msgstr "- Das Race startet in 4 Sekunden -"
+
+#: .\catfish_discord\cogs\alttprrace.py:74
+msgid "- Race will start in 3 seconds -"
+msgstr "- Das Race startet in 3 Sekunden -"
+
+#: .\catfish_discord\cogs\alttprrace.py:76
+msgid "- Race will start in 2 seconds -"
+msgstr "- Das Race startet in 2 Sekunden -"
+
+#: .\catfish_discord\cogs\alttprrace.py:78
+msgid "- Race will start in 1 second -"
+msgstr "- Das Race startet in einer Sekunde -"
+
+#: .\catfish_discord\cogs\alttprrace.py:81
+msgid "- Race is started! Good luck -"
+msgstr "- Das Race beginnt! Viel glück -"
+
+#: .\catfish_discord\cogs\alttprrace.py:144
+msgid "There is currently no race ongoing"
+msgstr "Aktuell ist kein Race geplannt."
+
+#: .\catfish_discord\cogs\alttprrace.py:175
+msgid "Invalid command, please use subcommands."
+msgstr "Ungültiges Kommand, bitte verwende ein Subkommando, für Hilfe !help."
+
+#: .\catfish_discord\cogs\alttprrace.py:178
+#: .\catfish_discord\cogs\alttprrace.py:179
+msgid "Start a new race game."
+msgstr "Ein neues Race starten."
+
+#: .\catfish_discord\cogs\alttprrace.py:195
+msgid "Please start a race game more then 10 minutes before."
+msgstr "Das Race muss mindestens 10 Minuten vor beginn erstellt werden."
+
+#: .\catfish_discord\cogs\alttprrace.py:202
+msgid "Please finish your old race before you start a new one. Race ID: "
+msgstr ""
+"Please beende das vorherrige Race bevor ein neues gestartet werden kann. "
+"Race ID: "
+
+#: .\catfish_discord\cogs\alttprrace.py:208
+msgid "There is already a race ongoing, you cannot start a new one."
+msgstr ""
+"Es läuft aktuell ein Race, solange dieses aktive ist kann kein neues Race "
+"gestartet werden."
+
+#: .\catfish_discord\cogs\alttprrace.py:221
+msgid "New race is generated. Race ID: "
+msgstr "Ein neues Race wurde erstellt. Race ID: "
+
+#: .\catfish_discord\cogs\alttprrace.py:225
+msgid "New race is planned. - Race ID: "
+msgstr "Ein neues Race wurde geplannt. - Race ID: "
+
+#: .\catfish_discord\cogs\alttprrace.py:225
+msgid "The race will be start at "
+msgstr "Das Race startet um "
+
+#: .\catfish_discord\cogs\alttprrace.py:226
+msgid "Registration is possible until 10 minutes before the start time"
+msgstr "Die Anmeldung ist bis 10 Minuten vor begin des Races möglich."
+
+#: .\catfish_discord\cogs\alttprrace.py:228
+msgid ""
+"Enter the command !joint to join the race. Enter !leave if you want to leave "
+"the race again."
+msgstr ""
+"Gib !join oder !enter um dem Race beizutreten. Gib !leave ein um das Race "
+"wieder zu verlassen."
+
+#: .\catfish_discord\cogs\alttprrace.py:230
+msgid "Participants:"
+msgstr "Teilnehmer:"
+
+#: .\catfish_discord\cogs\alttprrace.py:235
+#: .\catfish_discord\cogs\alttprrace.py:236
+msgid "Stop a race game."
+msgstr "EIn Race beenden."
+
+#: .\catfish_discord\cogs\alttprrace.py:252
+msgid "You stopped the race with id: "
+msgstr "Du beendest das Race mit der ID: "
+
+#: .\catfish_discord\cogs\alttprrace.py:254
+msgid "There is no active race from you or with this ID."
+msgstr "Es läuft aktuell kein Race von dir oder mit dieser ID."
+
+#: .\catfish_discord\cogs\alttprrace.py:257
+#: .\catfish_discord\cogs\alttprrace.py:258
+msgid "Get the result of an race."
+msgstr "Erhalte das Ergebniss eines Races."
+
+#: .\catfish_discord\cogs\alttprrace.py:268
+#: .\catfish_discord\cogs\alttprrace.py:269
+msgid "Join a race game."
+msgstr "Nimm an einem Race teil."
+
+#: .\catfish_discord\cogs\alttprrace.py:283
+msgid "You already join an game."
+msgstr "Du bist bereits einem Race beigetretten."
+
+#: .\catfish_discord\cogs\alttprrace.py:288
+msgid "joined the race."
+msgstr "nimmt am Race teil."
+
+#: .\catfish_discord\cogs\alttprrace.py:292
+#: .\catfish_discord\cogs\alttprrace.py:293
+msgid "Leave a race game."
+msgstr "Ein Race verlassen."
+
+#: .\catfish_discord\cogs\alttprrace.py:317
+msgid "You not joined any game."
+msgstr "Du bist keinem Race beigetretten."
+
+#: .\catfish_discord\cogs\alttprrace.py:319
+msgid "You can not leave a game with a nearly started or ongoing."
+msgstr ""
+"Du kannst keinem Race beitretten, welches in den kommenden 10 Minuten "
+"startet oder bereits läuft."
+
+#: .\catfish_discord\cogs\alttprrace.py:323
+#: .\catfish_discord\cogs\alttprrace.py:324
+msgid "You leave an ongoing match."
+msgstr "Du verlässt ein laufendes Race."
+
+#: .\catfish_discord\cogs\alttprrace.py:336
+msgid "You can not be cancel an game, if it is not started."
+msgstr "Du kannst kein Spiel abbrechen, welches noch nicht gestartet wurde."
+
+#: .\catfish_discord\cogs\alttprrace.py:350
+#: .\catfish_discord\cogs\alttprrace.py:351
+msgid "Finish the game."
+msgstr "Beeende ein Race."
+
+#: .\catfish_discord\cogs\alttprrace.py:362
+msgid "You can not be finishing an game, if it is not started."
+msgstr "Du kannst kein Race beenden, welches noch nicht gestartet wurde."
+
+#: .\catfish_discord\cogs\catmin.py:13 .\catfish_discord\cogs\catmin.py:14
+msgid "Setup ids for discord server."
+msgstr "Einrichtung der IDs eines Discord Servers."
+
+#: .\catfish_discord\cogs\catmin.py:31
+msgid "Setup done."
+msgstr "Installtion erfolgreich."

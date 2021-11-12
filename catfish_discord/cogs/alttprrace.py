@@ -47,7 +47,8 @@ class AlttprRace(commands.Cog):
         await race.save()
 
         # Generate new seed
-        await channel.send(_("Please download this seed for the current race."))
+        await channel.send(
+            _("This is the seed for the upcoming race. If you finish the race, please enter !done in this channel."))
         seed = await get_preset(race.preset, hints=False, spoilers="off", allow_quickswap=True)
         emojis = self.bot.get_guild(emojis_guild_id).emojis
         embed = await get_embed(emojis, seed)
@@ -56,22 +57,29 @@ class AlttprRace(commands.Cog):
         await race.save()
 
         # Countdown
+        await channel.send(_("- Race will start in 10 minutes -"))
         await asyncio.sleep(300)
-        await channel.send(_("Race will start in around 5 minutes."))
+        await channel.send(_("- Race will start in 5 minutes -"))
         await asyncio.sleep(240)
-        await channel.send(_("Race will start in around 1 minutes."))
+        await channel.send(_("- Race will start in 1 minute -"))
         await asyncio.sleep(30)
-        await channel.send(_("Race will start in around 30 seconds."))
+        await channel.send(_("- Race will start in 30 seconds -"))
         await asyncio.sleep(20)
-        await channel.send(_("Race will start in around 10 seconds."))
-        await asyncio.sleep(7)
-        await channel.send(_("Race will start in around 3 seconds."))
+        await channel.send(_("- Race will start in 10 seconds -"))
+        await asyncio.sleep(5)
+        await channel.send(_("- Race will start in 5 seconds -"))
         await asyncio.sleep(1)
-        await channel.send("2")
+        await channel.send(_("- Race will start in 4 seconds -"))
         await asyncio.sleep(1)
-        await channel.send("1")
+        await channel.send(_("- Race will start in 3 seconds -"))
         await asyncio.sleep(1)
-        await channel.send(_("Race is started. Good luck."))
+        await channel.send(_("- Race will start in 2 seconds -"))
+        await asyncio.sleep(1)
+        await channel.send(_("- Race will start in 1 second -"))
+        await asyncio.sleep(1)
+        await channel.send("========================")
+        await channel.send(_("- Race is started! Good luck -"))
+        await channel.send("========================")
         # Start game
         race.ongoing = True
         await race.save()
@@ -94,7 +102,7 @@ class AlttprRace(commands.Cog):
         channels = [
             guild.get_channel(race.guild.race_channel_id),
             guild.get_channel(race.guild.race_registration_channel_id),
-            guild.get_channel(race.guild.race_chat_channel_id)
+            #guild.get_channel(race.guild.race_chat_channel_id)
         ]
         for channel in channels:
             messages = await channel.history().flatten()
@@ -118,16 +126,28 @@ class AlttprRace(commands.Cog):
         race.finished = True
         await race.save()
 
-    async def _result(self, race, channel_id=None):
+    async def _result_header(self, race, channel_id=None):
         channel_id = race.guild.race_result_channel_id if not channel_id else channel_id
         channel = self.bot.get_guild(race.guild.id).get_channel(channel_id)
-        participants = await Participant.filter(race=race).order_by('time')
         await channel.send(f"======== Race {race.id}  -  {race.preset} ========")
         await channel.send(f"Seed: {race.seed}")
+
+    async def _result_participant(self, channel_id, count, player):
+        race = player.race
+        channel_id = race.guild.race_result_channel_id if not channel_id else channel_id
+        channel = self.bot.get_guild(race.guild.id).get_channel(channel_id)
+        time = "None" if player.time > datetime.timedelta(days=1) or player.resign else f"{player.time}"
+        await channel.send(f"#{count} - {player.player} - Time: {time}")
+
+    async def _result(self, race, channel_id=None):
+        channel_id = race.guild.race_result_channel_id if not channel_id else channel_id
+        await self._result_header(race, channel_id)
+        channel = self.bot.get_guild(race.guild.id).get_channel(channel_id)
+
+        participants = await Participant.filter(race=race).order_by('time')
         count = 1
         for player in participants:
-            time = "None" if player.time > datetime.timedelta(days=1) or player.resign else f"{player.time}"
-            await channel.send(f"#{count} - {player.player} - Time: {time}")
+            await self._result_participant(channel_id, count, player)
             count = count + 1
 
     async def _get_active_race(self, ctx):
@@ -191,7 +211,7 @@ class AlttprRace(commands.Cog):
         race = await Race.get_or_none(author_id=ctx.author.id, finished=False)
         if race:
             await ctx.reply(
-                _('Please finish you old race before you start a new one. Race ID: ' + f"{race.id}"))
+                _('Please finish your old race before you start a new one. Race ID: ') + f"{race.id}")
             return
 
         # Check if already a race is started in guild
@@ -214,15 +234,18 @@ class AlttprRace(commands.Cog):
 
         # Public Message
         await ctx.message.channel.send(
-            _('New race is planned. Race ID: ') + f"{race.id} " + _(" will be started at ") + f"{time}")
-        await ctx.message.channel.send('================================')
+            _('New race is planned. - Race ID: ') + f"{race.id} -" + _("The race will be start at ") + f"{time} - "
+            + _("Registration is possible until 10 minutes before the start time"))
+        await ctx.message.channel.send(
+            _('Enter the command !joint to join the race. Enter !leave if you want to leave the race again.'))
+        await ctx.message.channel.send('====================================')
         await ctx.message.channel.send(_("Participants:"))
 
         # todo Random Message
 
     @race.command(
         brief=_('Stop a race game.'),
-        help=_('Stop a new race game.'),
+        help=_('Stop a race game.'),
         invoke_without_command=True,
         pass_context=True
     )
@@ -274,7 +297,7 @@ class AlttprRace(commands.Cog):
             else:
                 roles = list(filter(lambda r: r.id == race.guild.race_active_role, ctx.guild.roles))
                 await ctx.author.add_roles(*roles)
-                await ctx.message.channel.send(f"# {ctx.author.display_name} " + _('joined the race.'))
+                await ctx.message.channel.send(f"# **{ctx.author.display_name}** " + _('joined the race.'))
         await ctx.message.delete()
 
     @commands.group(
@@ -299,7 +322,7 @@ class AlttprRace(commands.Cog):
                     # Remove from list
                     messages = await ctx.message.channel.history().flatten()
                     for message in messages:
-                        if message.content.startswith(f"# {ctx.author.display_name}"):
+                        if message.content.startswith(f"# **{ctx.author.display_name}**"):
                             await message.delete()
                             break
                 else:
@@ -309,7 +332,7 @@ class AlttprRace(commands.Cog):
         await ctx.message.delete()
 
     @commands.group(
-        brief=_('You leave an ongoing match'),
+        brief=_('You leave an ongoing match.'),
         help=_('You leave an ongoing match.'),
         invoke_without_command=True,
         aliases=['ff']
