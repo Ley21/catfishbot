@@ -59,10 +59,11 @@ async def get_mystery(preset):
 
 
 async def get_multiworld(file_content):
-    base_url = "https://berserkermulti.world"
+    base_url = "https://archipelago.gg"
     result = {'seed_info_url': '', 'room_url': ''}
     files = {"file": ("players.zip", file_content, "multipart/form-data")}
-    response = requests.post(f'{base_url}/generate', files=files, allow_redirects=False)
+    data = {'forfeit_mode': "auto-enabled"}
+    response = requests.post(f'{base_url}/generate', data=data, files=files, allow_redirects=False)
 
     wait_suburi = re.findall('href="(.*)"', response.text)[0]
     wait_response = requests.get(f'{base_url}{wait_suburi}', allow_redirects=False)

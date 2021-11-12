@@ -71,7 +71,7 @@ class AlttprDefault(commands.Cog):
 
             if multi is not None:
                 await ctx.author.send(_('Multiworld Seed Information') + f": {multi['seed_info_url']}")
-                await ctx.reply(_('Multiworld Room') + f": {multi['seed_info_url']}")
+                await ctx.reply(_('Multiworld Room') + f": {multi['room_url']}")
                 return
 
         await ctx.reply(_('Multiworld could not be generated.'))
