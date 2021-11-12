@@ -70,6 +70,10 @@ class AlttprDefault(commands.Cog):
             multi = await get_multiworld(file_request.content)
 
             if multi is not None:
+                if multi['error'] != '':
+                    await ctx.reply(_('Multiworld could not be generated.'))
+                    await ctx.reply(multi['error'])
+                    return
                 await ctx.author.send(_('Multiworld Seed Information') + f": {multi['seed_info_url']}")
                 await ctx.reply(_('Multiworld Room') + f": {multi['room_url']}")
                 return

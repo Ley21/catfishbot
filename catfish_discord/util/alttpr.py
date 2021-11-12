@@ -5,6 +5,7 @@ import random
 import requests
 import re
 import time
+import codecs
 
 
 async def get_preset(preset, hints, spoilers, allow_quickswap):
@@ -60,7 +61,7 @@ async def get_mystery(preset):
 
 async def get_multiworld(file_content):
     base_url = "https://archipelago.gg"
-    result = {'seed_info_url': '', 'room_url': ''}
+    result = {'seed_info_url': '', 'room_url': '', 'error': ''}
     files = {"file": ("players.zip", file_content, "multipart/form-data")}
     data = {'forfeit_mode': "auto-enabled"}
     response = requests.post(f'{base_url}/generate', data=data, files=files, allow_redirects=False)
@@ -69,18 +70,26 @@ async def get_multiworld(file_content):
     wait_response = requests.get(f'{base_url}{wait_suburi}', allow_redirects=False)
     suburi = re.findall('href="(.*)"', wait_response.text)[0]
     counter = 0
-    while '/seed/' not in suburi and counter < 300:
+    failed = False
+    while '/seed/' not in suburi and counter < 30:
         time.sleep(2)
         wait_response = requests.get(f'{base_url}{wait_suburi}', allow_redirects=False)
         suburi = re.findall('href="(.*)"', wait_response.text)[0]
+        if "Generation failed" in str(wait_response.content):
+            failed = True
+            break
         counter += 1
 
-    if counter < 300:
+    if counter < 30 and not failed:
         seed = suburi.replace('/seed/', '')
         response = requests.get(f'{base_url}/new_room/{seed}', allow_redirects=False)
         room = re.findall('href="(.*)"', response.text)[0]
 
         result['seed_info_url'] = f"{base_url}{suburi}"
         result['room_url'] = f"{base_url}{room}"
+        return result
+    elif failed:
+        error_message = re.findall('{(.*)}', wait_response.text)[0]
+        result['error'] = '{'+error_message+'}'
         return result
     return None
