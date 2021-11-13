@@ -23,7 +23,7 @@ async def write_progression_spoiler(seed, spoiler_type='spoiler'):
     spoiler_base_url = f"https://{bucket_name}s3.{os.environ.get('AWS_DEFAULT_REGION')}.amazonaws.com/spoiler"
     async with session.client('s3') as s3:
         await s3.put_object(
-            Bucket=os.environ.get('AWS_SPOILER_BUCKET_NAME'),
+            Bucket=bucket_name,
             Key='spoiler/'+filename,
             Body=payload,
             ACL='public-read',

@@ -1,0 +1,3 @@
+[submodule "ext_tools/ALttPDoorRandomizer"]
+	path = ext_tools/ALttPDoorRandomizer
+	url = https://github.com/codemann8/ALttPDoorRandomizer.git

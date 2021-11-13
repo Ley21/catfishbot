@@ -20,6 +20,8 @@ Set environment variables / add .env file for pipenv to use or in docker-compose
 - DISCORD_TOKEN / Token for you discord bot
 - ALTTP_ROM / Orginal japanisch rom to generate a game / create patch files.
 - OPTIMIZE_SPOILER / Create a spoiler for spoiler coop games (default: true)
+- DOOR_RANDO_HOME / Home of your door randomizer (only for doors necessary)
+- ALTTPR_PATCHER_URL / Url of patcher (only for doors necessary)
 
 If OPTIMIZE_SPOILER == true:
 - AWS_SPOILER_BUCKET_NAME / AWS bucket for uploading spoiler logs

@@ -102,7 +102,7 @@ class AlttprRace(commands.Cog):
         channels = [
             guild.get_channel(race.guild.race_channel_id),
             guild.get_channel(race.guild.race_registration_channel_id),
-            #guild.get_channel(race.guild.race_chat_channel_id)
+            guild.get_channel(race.guild.race_result_channel_id)
         ]
         for channel in channels:
             messages = await channel.history().flatten()

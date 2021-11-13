@@ -38,7 +38,11 @@ emoji_code_map = {
 }
 
 
-async def get_embed(emojis, seed):
+async def get_embed(emojis, seed, name=False, notes=False):
+
+    if hasattr(seed, 'doors') and seed.doors:
+        return await get_doors_embed(emojis, seed, name, notes)
+
     settings_map = await seed.randomizer_settings()
     meta = seed.data['spoiler'].get('meta', {})
     embed = discord.Embed(
@@ -113,6 +117,31 @@ async def get_embed(emojis, seed):
                     value=build_file_select_code(seed, emojis=emojis),
                     inline=False)
     embed.add_field(name='Permalink', value=seed.url, inline=False)
+    return embed
+
+
+async def get_doors_embed(emojis, seed, name=False, notes=False):
+    embed = discord.Embed(
+        title=name if name else "Requested Seed",
+        description=notes if notes else "Requested Door Randomizer Game.",
+        color=discord.Colour.dark_red()
+    )
+
+    embed.add_field(
+        name='Door Randomizer',
+        value="This game was generated using Aerinon's Door Randomizer.",
+        inline=False)
+
+    embed.add_field(name='File Select Code', value=build_file_select_code(seed, emojis=emojis), inline=False)
+
+    embed.add_field(name='Permalink', value=seed.url, inline=False)
+
+    if seed.spoilers:
+        embed.add_field(name='Spoiler Log', value=seed.spoiler_url, inline=False)
+        if seed.attempts > 1:
+            embed.add_field(name='Generation Attempts', value=seed.attempts, inline=False)
+
+    embed.add_field(name="Version", value=seed.version)
     return embed
 
 

@@ -5,57 +5,107 @@ import random
 import requests
 import re
 import time
-import codecs
+from catfish_discord.util.alttpr_mystery_doors import generate_doors_mystery
+from catfish_discord.util.alttpr_doors import AlttprDoor
+
+
+def read_file(filepath):
+    if not Path(filepath).is_file():
+        return None
+
+    with open(filepath, 'r') as stream:
+        try:
+            return yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            print(exc)
+            return None
 
 
 async def get_preset(preset, hints, spoilers, allow_quickswap):
-    present_path = f'presets/alttpr/{preset}.yaml'
-    if not Path(present_path).is_file():
-        return None
+    preset_data = read_file(f'presets/alttpr/{preset.lower()}.yaml')
+    if preset_data is None:
+        return
+    settings = preset_data['settings']
+    doors = preset_data.get('doors', False)
 
-    with open(present_path, 'r') as stream:
-        try:
-            preset_dict = yaml.safe_load(stream)
-        except yaml.YAMLError as exc:
-            print(exc)
-            return
-    if not preset_dict:
-        return None
+    if doors:
+        seed = None
+        # seed = await AlttprDoor(
+        #     settings=settings,
+        #     spoilers=spoilers != "mystery",
+        # ).generate_game()
+    else:
+        settings['hints'] = 'on' if hints else 'off'
+        settings['tournament'] = False if spoilers == 'on' else True
+        settings['spoilers'] = spoilers
+        settings['allow_quickswap'] = allow_quickswap
 
-    settings = preset_dict['settings']
-    settings['hints'] = 'on' if hints else 'off'
-    settings['tournament'] = False if spoilers == 'on' else True
-    settings['spoilers'] = spoilers
-    settings['allow_quickswap'] = allow_quickswap
+        if preset_data.get('customizer', False):
+            if 'l' not in settings:
+                settings['l'] = {}
+            for i in preset_data.get('forced_locations', {}):
+                location = random.choice(
+                    [loc for loc in i['locations'] if loc not in settings['l']])
+                settings['l'][location] = i['item']
 
-    if preset_dict.get('customizer', False):
-        if 'l' not in settings:
-            settings['l'] = {}
-        for i in preset_dict.get('forced_locations', {}):
-            location = random.choice(
-                [loc for loc in i['locations'] if loc not in settings['l']])
-            settings['l'][location] = i['item']
-
-    seed = await pyz3r.alttpr(
-        settings=settings,
-        customizer=preset_dict.get('customizer', False))
+        seed = await pyz3r.alttpr(
+            settings=settings,
+            customizer=preset_data.get('customizer', False))
     return seed
 
 
-async def get_mystery(preset):
-    weights_path = f'weights/{preset}.yaml'
-    if not Path(weights_path).is_file():
-        return None
-    with open(weights_path, 'r') as stream:
-        try:
-            weights = yaml.safe_load(stream)
-        except yaml.YAMLError as exc:
-            print(exc)
-            return
+def get_mystery(weights, spoilers="mystery"):
+    if 'preset' in weights:
+        rolled_preset = pyz3r.mystery.get_random_option(weights['preset']).lower()
+        if rolled_preset == 'none':
+            return generate_doors_mystery(weights=weights, spoilers=spoilers)
+        else:
+            preset_data = read_file(f'presets/alttpr/{rolled_preset}.yaml')
+            settings = preset_data['settings']
+            customizer = preset_data.get('customizer', False)
+            doors = preset_data.get('doors', False)
+            settings.pop('name', None)
+            settings.pop('notes', None)
+            settings['spoilers'] = spoilers
+            custom_instructions = pyz3r.mystery.get_random_option(weights.get('custom_instructions', None))
 
-    settings, customizer = pyz3r.mystery.generate_random_settings(weights)
+            if customizer:
+                if 'l' not in settings:
+                    settings['l'] = {}
+                for i in preset_data.get('forced_locations', {}):
+                    location = random.choice(
+                        [loc for loc in i['locations'] if loc not in settings['l']])
+                    settings['l'][location] = i['item']
 
-    seed = await pyz3r.alttpr(settings=settings, customizer=customizer)
+            return {
+                'weights': weights,
+                'settings': settings,
+                'customizer': customizer,
+                'doors': doors,
+                'custom_instructions': custom_instructions
+            }
+    else:
+        return generate_doors_mystery(weights=weights, spoilers=spoilers)
+
+
+async def generate_mystery_game(weight_set, spoilers="mystery", tournament=True, allow_quickswap=True):
+    weights = read_file(f'weights/{weight_set.lower()}.yaml')
+    if weights is None:
+        return
+    mystery = get_mystery(weights, spoilers)
+
+    if mystery['doors']:
+        seed = None
+        # seed = await AlttprDoor(
+        #     settings=mystery.settings,
+        #     spoilers=spoilers != "mystery",
+        # ).generate_game()
+    else:
+
+        mystery['settings']['tournament'] = tournament
+        mystery['settings']['allow_quickswap'] = allow_quickswap
+
+        seed = await pyz3r.alttpr(settings=mystery['settings'], customizer=mystery['customizer'])
     return seed
 
 
