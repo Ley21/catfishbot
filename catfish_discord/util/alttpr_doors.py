@@ -41,7 +41,6 @@ class AlttprDoor():
                 json.dump(self.settings, f)
             attempts = 0
             try:
-                rom_path = "../../" + os.environ.get("ALTTP_ROM")
                 async for attempt in AsyncRetrying(stop=stop_after_attempt(10), retry=retry_if_exception_type(Exception)):
                     with attempt:
                         attempts += 1
@@ -49,12 +48,12 @@ class AlttprDoor():
                             'python',
                             'DungeonRandomizer.py',
                             '--settingsfile', settings_file_path,
-                            '--rom', rom_path,
+                            '--rom', os.environ.get("ALTTP_ROM"),
                             stdout=asyncio.subprocess.PIPE,
                             stderr=asyncio.subprocess.PIPE,
                             cwd=os.environ.get('DOOR_RANDO_HOME'))
 
-                        stdout, stderr = await proc.communicate()
+                        stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=20)
                         if proc.returncode > 0:
                             raise Exception(f'Exception while generating game: {stderr.decode()}')
             except RetryError as e:

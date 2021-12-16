@@ -83,6 +83,7 @@ class AlttprRace(commands.Cog):
         # Start game
         race.ongoing = True
         await race.save()
+        await self._result_header(race)
 
     async def _remove_all_roles(self, participant):
         race = participant.race
@@ -144,7 +145,7 @@ class AlttprRace(commands.Cog):
         await self._result_header(race, channel_id)
         channel = self.bot.get_guild(race.guild.id).get_channel(channel_id)
 
-        participants = await Participant.filter(race=race).order_by('time')
+        participants = await Participant.filter(race=race).select_related("race", "race__guild").order_by('time')
         count = 1
         for player in participants:
             await self._result_participant(channel_id, count, player)
@@ -170,7 +171,11 @@ class AlttprRace(commands.Cog):
         race_finished = active_runner_count == 0
         if race_finished:
             await self._stop_race(race)
-            await self._result(race)
+            #await self._result
+            resign_players = await Participant.filter(race=race, resign=True).select_related("race", "race__guild")
+            position = await Participant.filter(race=race, done=True).count() + 1
+            for rp in resign_players:
+                await self._result_participant(None, position, rp)
 
     async def _check_channel(self, ctx, channel_type):
         guild_settings = await GuildSettings.get(id=ctx.guild.id)
@@ -382,6 +387,11 @@ class AlttprRace(commands.Cog):
                     await participant.save()
                     await self._change_role(participant)
 
+                    # Write result after done
+                    position = await Participant.filter(race=race, done=True).count()
+                    await self._result_participant(None, position, participant)
+
+                    # Check if race is finished
                     asyncio.create_task(self._check_participants(race))
 
         await ctx.message.delete()
