@@ -5,7 +5,6 @@ name = "pypi"
 
 [packages]
 DateTime = "4.3"
-discord = "1.7.3"
 html2markdown = "0.1.7"
 PyYAML = "5.4.1"
 pyz3r = "5.5.2"
@@ -13,6 +12,8 @@ requests = "2.26.0"
 tenacity = "8.0.1"
 aioboto3 = "*"
 tortoise-orm = "*"
+disnake = "*"
+beautifulsoup4 = "*"
 
 [dev-packages]
 

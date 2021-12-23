@@ -7,6 +7,7 @@ import re
 import time
 from catfish_discord.util.alttpr_mystery_doors import generate_doors_mystery
 from catfish_discord.util.alttpr_doors import AlttprDoor
+from bs4 import BeautifulSoup
 
 
 def read_file(filepath):
@@ -116,6 +117,10 @@ async def get_multiworld(file_content):
     data = {'forfeit_mode': "auto-enabled"}
     response = requests.post(f'{base_url}/generate', data=data, files=files, allow_redirects=False)
 
+    soup = BeautifulSoup(response.text, 'html.parser')
+    check_result = soup.find(id='check-result')
+    if check_result is not None:
+        return None
     wait_suburi = re.findall('href="(.*)"', response.text)[0]
     wait_response = requests.get(f'{base_url}{wait_suburi}', allow_redirects=False)
     suburi = re.findall('href="(.*)"', wait_response.text)[0]

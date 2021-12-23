@@ -1,4 +1,4 @@
-import discord
+import disnake
 import html2markdown
 import datetime
 
@@ -45,11 +45,11 @@ async def get_embed(emojis, seed, name=False, notes=False):
 
     settings_map = await seed.randomizer_settings()
     meta = seed.data['spoiler'].get('meta', {})
-    embed = discord.Embed(
+    embed = disnake.Embed(
         title=meta.get('name', 'Requested Seed'),
         description=html2markdown.convert(
             meta.get('notes', '')),
-        color=discord.Colour.dark_green(),
+        color=disnake.Colour.dark_green(),
         timestamp=datetime.datetime.fromisoformat(seed.data['generated']))
     if meta.get('spoilers', 'off') == "mystery":
         embed.add_field(
@@ -121,10 +121,10 @@ async def get_embed(emojis, seed, name=False, notes=False):
 
 
 async def get_doors_embed(emojis, seed, name=False, notes=False):
-    embed = discord.Embed(
+    embed = disnake.Embed(
         title=name if name else "Requested Seed",
         description=notes if notes else "Requested Door Randomizer Game.",
-        color=discord.Colour.dark_red()
+        color=disnake.Colour.dark_red()
     )
 
     embed.add_field(
@@ -147,7 +147,7 @@ async def get_doors_embed(emojis, seed, name=False, notes=False):
 
 def build_file_select_code(seed, emojis=None):
     if emojis:
-        emoji_list = list(map(lambda x: str(discord.utils.get(
+        emoji_list = list(map(lambda x: str(disnake.utils.get(
             emojis, name=emoji_code_map[x])), seed.code))
         return ' '.join(emoji_list) + ' (' + '/'.join(seed.code) + ')'
     else:

@@ -4,7 +4,7 @@ import gettext
 import os
 
 import pytz
-from discord.ext import commands
+from disnake.ext import commands
 
 from catfish_discord.util.alttpr import get_preset
 from catfish_discord.util.alttpr_disord import get_embed

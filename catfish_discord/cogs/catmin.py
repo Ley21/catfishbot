@@ -1,4 +1,4 @@
-from discord.ext import commands
+from disnake.ext import commands
 from models.models import GuildSettings
 import gettext
 import os

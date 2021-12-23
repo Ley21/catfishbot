@@ -46,3 +46,12 @@ class GuildSettings(Model):
 
     def __str__(self):
         return self.guild
+
+
+class GameConfiguration(Model):
+    user_id = fields.IntField(pk=True)
+    game = fields.TextField(default="")
+    config_file = fields.TextField(default="")
+
+    class Meta:
+        unique_together = ("user_id", "game")
