@@ -16,6 +16,13 @@ tz = pytz.timezone(os.getenv("TIMEZONE", 'Europe/Berlin'))
 emojis_guild_id = os.getenv("EMOJIS_GUILD_ID", 859817345743978497)
 
 
+def str_timedelta(time_delta, fmt):
+    d = {"days": time_delta.days}
+    d["hours"], rem = divmod(time_delta.seconds, 3600)
+    d["minutes"], d["seconds"] = divmod(rem, 60)
+    return fmt.format(**d)
+
+
 class AlttprRace(commands.Cog):
 
     def __init__(self, bot):
@@ -137,7 +144,10 @@ class AlttprRace(commands.Cog):
         race = player.race
         channel_id = race.guild.race_result_channel_id if not channel_id else channel_id
         channel = self.bot.get_guild(race.guild.id).get_channel(channel_id)
-        time = "None" if player.time > datetime.timedelta(days=1) or player.resign else f"{player.time}"
+        if player.time > datetime.timedelta(days=1) or player.resign:
+            time = "None"
+        else:
+            time = str_timedelta(player.time, "{hours}:{minutes}:{seconds}")
         await channel.send(f"#{count} - {player.player} - Time: {time}")
 
     async def _result(self, race, channel_id=None):
