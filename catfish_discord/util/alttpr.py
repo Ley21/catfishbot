@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 import yaml
 import pyz3r
@@ -21,8 +22,34 @@ def read_file(filepath):
             return None
 
 
+def get_full_path(preset, directory):
+    files = os.listdir(directory)
+    for file in files:
+        if file == f'{preset}.yaml':
+            return f'{directory}/{preset}.yaml'
+    return None
+
+
+def find_file(preset_name):
+    zockerstuebchen = 'presets/alttpr/zockerstuebchen'
+    external = 'presets/alttpr/external'
+    preset = preset_name.lower()
+    zockerstuebchen_file = get_full_path(preset, zockerstuebchen)
+    if zockerstuebchen_file:
+        return zockerstuebchen_file
+    external_file = get_full_path(preset, external)
+    if external_file:
+        return external_file
+    return None
+
+
+
+
 async def get_preset(preset, hints, spoilers, allow_quickswap):
-    preset_data = read_file(f'presets/alttpr/{preset.lower()}.yaml')
+    preset_file_path = find_file(preset)
+    if preset_file_path is None:
+        return
+    preset_data = read_file(preset_file_path)
     if preset_data is None:
         return
     settings = preset_data['settings']
@@ -60,7 +87,8 @@ def get_mystery(weights, spoilers="mystery"):
         if rolled_preset == 'none':
             return generate_doors_mystery(weights=weights, spoilers=spoilers)
         else:
-            preset_data = read_file(f'presets/alttpr/{rolled_preset}.yaml')
+            preset_file_path = find_file(rolled_preset)
+            preset_data = read_file(preset_file_path)
             settings = preset_data['settings']
             customizer = preset_data.get('customizer', False)
             doors = preset_data.get('doors', False)
