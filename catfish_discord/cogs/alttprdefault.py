@@ -187,9 +187,12 @@ class AlttprDefault(commands.Cog):
         pass_context=True
     )
     async def list(self, ctx):
-        daily = await Daily.get(id=ctx.guild.id)
-        await ctx.reply(_("This are all daily seeds, which will be rolled:")+" "+daily.seeds+" \n"+_("At currently:")
+        daily = await Daily.get_or_none(id=ctx.guild.id)
+        if daily:
+            await ctx.reply(_("This are all daily seeds, which will be rolled:")+" "+daily.seeds+" \n"+_("At currently:")
                         +" "+daily.time)
+        else:
+            await ctx.reply(_("No daily task is existing."))
 
 
 def setup(bot):
