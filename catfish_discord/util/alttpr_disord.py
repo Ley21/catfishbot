@@ -38,15 +38,17 @@ emoji_code_map = {
 }
 
 
-async def get_embed(emojis, seed, name=False, notes=False):
+async def get_embed(emojis, seed, title=None, name=False, notes=False):
 
     if hasattr(seed, 'doors') and seed.doors:
         return await get_doors_embed(emojis, seed, name, notes)
 
     settings_map = await seed.randomizer_settings()
     meta = seed.data['spoiler'].get('meta', {})
+    default_title = meta.get('name', 'Requested Seed')
+    title_seed = f'{title}' if title else default_title
     embed = discord.Embed(
-        title=meta.get('name', 'Requested Seed'),
+        title=title_seed,
         description=html2markdown.convert(
             meta.get('notes', '')),
         color=discord.Colour.dark_green(),

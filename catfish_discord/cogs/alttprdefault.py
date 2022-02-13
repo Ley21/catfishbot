@@ -5,18 +5,58 @@ from catfish_discord.util.alttpr import get_preset, generate_mystery_game, get_m
 from catfish_discord.util.alttpr_disord import get_embed
 import gettext
 import requests
+import datetime
 from catfish_discord.util.alttpr_extensions import write_progression_spoiler
+import asyncio
+from models.models import Daily
+import random
+import pytz
 
 
 translate = gettext.translation('catfishbot', localedir='locale', fallback=True, languages=[os.getenv('LANG')])
 _ = translate.gettext
 emojis_guild_id = os.getenv("EMOJIS_GUILD_ID", 859817345743978497)
-
+tz = pytz.timezone(os.getenv("TIMEZONE", 'Europe/Berlin'))
 
 class AlttprDefault(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+        self._tasks = dict()
+        asyncio.get_event_loop().create_task(self._create_tasks())
+
+    async def _create_tasks(self):
+        await asyncio.sleep(5)
+        dailys = await Daily.all()
+
+        for daily in dailys:
+            task = asyncio.create_task(self._daily_seed(daily.guild_id, daily.channel_id, daily.time, daily.seeds))
+            self._tasks[daily.guild_id] = task
+
+    async def _daily_seed(self, guild_id, channel_id, time, seeds):
+        guild = self.bot.get_guild(guild_id)
+        channel = guild.get_channel(channel_id)
+        first_time = True
+        while True:
+            if first_time:
+                now = datetime.datetime.now()
+                tomorrow = datetime.datetime(now.year, now.month, now.day + 1, int(time.split(':')[0]), int(time.split(':')[1]), 0)
+                delta = tomorrow - now
+                remaining = delta.total_seconds()
+                await asyncio.sleep(remaining)
+                first_time = False
+            else:
+                await asyncio.sleep(86400)
+            await self._post_seed(channel, seeds)
+
+    async def _post_seed(self, channel, seeds):
+        emojis = self.bot.get_guild(emojis_guild_id).emojis
+        now = datetime.datetime.now(tz)
+        seed_list = seeds.split(',')
+        random_seed = random.choice(seed_list)
+        seed = await get_preset(random_seed, hints=False, spoilers="off", allow_quickswap=True)
+        embed = await get_embed(emojis, seed, _("Daily Challenge: ") + f'{now.day}.{now.month}.{now.year} - {random_seed}')
+        await channel.send(embed=embed)
 
     @commands.group(
         brief=_('Generate a seed from preset.'),
@@ -89,6 +129,47 @@ class AlttprDefault(commands.Cog):
                 return
 
         await ctx.reply(_('Multiworld could not be generated.'))
+
+    @commands.group(pass_context=True, invoke_without_command=True)
+    async def daily(self, ctx):
+        if ctx.invoked.subcommand is None:
+            await self.bot.say(_("Invalid command, please use subcommands."))
+
+    async def _cancle_task(self, task):
+        try:
+            task.cancel()
+            await task
+        except:
+            print("Exception ocurred")
+
+
+    @daily.command(
+        brief=_('Start an daily game on current discord and channel.'),
+        help=_('Start an daily game on current discord and channel.'),
+        invoke_without_command=True,
+        pass_context=True
+    )
+    async def add(self, ctx, time, seeds):
+        daily_seed = await Daily.update_or_create(guild_id=ctx.guild.id, channel_id=ctx.channel.id, time=time, seeds=seeds)
+        await self._post_seed(ctx.channel, seeds)
+        daily = daily_seed[0]
+        task = asyncio.create_task(self._daily_seed(daily.guild_id, daily.channel_id, daily.time, daily.seeds))
+        task_old = self._tasks[daily.guild_id]
+        await self._cancle_task(task_old)
+        self._tasks[daily.guild_id] = task
+
+    @daily.command(
+        brief=_('Remove an daily game on current discord and channel.'),
+        help=_('Remove an daily game on current discord and channel.'),
+        invoke_without_command=True,
+        pass_context=True
+    )
+    async def remove(self, ctx):
+        task = self._tasks[ctx.guild.id]
+        await self._cancle_task(task)
+        del self._tasks[ctx.guild.id]
+        daily = await Daily.get(guild_id=ctx.guild.id)
+        await daily.delete()
 
 
 def setup(bot):

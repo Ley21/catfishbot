@@ -46,3 +46,11 @@ class GuildSettings(Model):
 
     def __str__(self):
         return self.guild
+
+
+class Daily(Model):
+    id = fields.IntField(pk=True)
+    guild_id = fields.IntField()
+    channel_id = fields.IntField()
+    time = fields.TextField()
+    seeds = fields.TextField()
