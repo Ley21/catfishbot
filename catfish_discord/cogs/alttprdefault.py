@@ -150,9 +150,17 @@ class AlttprDefault(commands.Cog):
         pass_context=True
     )
     async def add(self, ctx, time, seeds):
-        daily_seed = await Daily.update_or_create(id=ctx.guild.id, channel_id=ctx.channel.id, time=time, seeds=seeds)
+        daily = await Daily.get_or_none(id=ctx.guild.id)
+        if daily is None:
+            daily_seed = await Daily.update_or_create(id=ctx.guild.id, channel_id=ctx.channel.id, time=time, seeds=seeds)
+            daily = daily_seed[0]
+        else:
+            daily.channel_id = ctx.channel.id
+            daily.seeds = seeds
+            daily.time = time
+            await daily.save()
+
         await self._post_seed(ctx.channel, seeds)
-        daily = daily_seed[0]
         task = asyncio.create_task(self._daily_seed(daily.id, daily.channel_id, daily.time, daily.seeds))
         if daily.id in self._tasks:
             task_old = self._tasks[daily.id]
