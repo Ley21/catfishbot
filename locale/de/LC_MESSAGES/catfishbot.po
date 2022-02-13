@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-02-13 17:53+0100\n"
-"PO-Revision-Date: 2022-02-13 17:55+0100\n"
+"POT-Creation-Date: 2022-02-13 18:17+0100\n"
+"PO-Revision-Date: 2022-02-13 18:18+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -76,10 +76,23 @@ msgstr ""
 "Erstelle eine Tägliche Herausforderung für den aktuellen Channel auf dem "
 "aktuellen Server."
 
-#: .\catfish_discord\cogs\alttprdefault.py:162
 #: .\catfish_discord\cogs\alttprdefault.py:163
+#: .\catfish_discord\cogs\alttprdefault.py:164
 msgid "Remove an daily game on current discord and channel."
 msgstr "Entfernt die Tägliche Herausforderung aus diesem Channel."
+
+#: .\catfish_discord\cogs\alttprdefault.py:183
+msgid "This are all daily seeds, which will be rolled:"
+msgstr "Folgende Tägliche Herausforderungen werden aktuell gewürfelt:"
+
+#: .\catfish_discord\cogs\alttprdefault.py:183
+msgid "At currently:"
+msgstr "Um aktuell folgende Uhrzeit:"
+
+#: .\catfish_discord\cogs\alttprdefault.py:176
+#: .\catfish_discord\cogs\alttprdefault.py:177
+msgid "List all daily seeds."
+msgstr "Liste die aktuellen täglichen Seeds."
 
 #: .\catfish_discord\cogs\alttprrace.py:48
 msgid "== Registration is now closed, and race will start in 10 minutes. =="

@@ -49,8 +49,7 @@ class GuildSettings(Model):
 
 
 class Daily(Model):
-    id = fields.IntField(pk=True)
-    guild_id = fields.IntField()
+    id = fields.IntField(pk=True, generated=False)
     channel_id = fields.IntField()
     time = fields.TextField()
     seeds = fields.TextField()

@@ -30,8 +30,8 @@ class AlttprDefault(commands.Cog):
         dailys = await Daily.all()
 
         for daily in dailys:
-            task = asyncio.create_task(self._daily_seed(daily.guild_id, daily.channel_id, daily.time, daily.seeds))
-            self._tasks[daily.guild_id] = task
+            task = asyncio.create_task(self._daily_seed(daily.id, daily.channel_id, daily.time, daily.seeds))
+            self._tasks[daily.id] = task
 
     async def _daily_seed(self, guild_id, channel_id, time, seeds):
         guild = self.bot.get_guild(guild_id)
@@ -150,13 +150,14 @@ class AlttprDefault(commands.Cog):
         pass_context=True
     )
     async def add(self, ctx, time, seeds):
-        daily_seed = await Daily.update_or_create(guild_id=ctx.guild.id, channel_id=ctx.channel.id, time=time, seeds=seeds)
+        daily_seed = await Daily.update_or_create(id=ctx.guild.id, channel_id=ctx.channel.id, time=time, seeds=seeds)
         await self._post_seed(ctx.channel, seeds)
         daily = daily_seed[0]
-        task = asyncio.create_task(self._daily_seed(daily.guild_id, daily.channel_id, daily.time, daily.seeds))
-        task_old = self._tasks[daily.guild_id]
-        await self._cancle_task(task_old)
-        self._tasks[daily.guild_id] = task
+        task = asyncio.create_task(self._daily_seed(daily.id, daily.channel_id, daily.time, daily.seeds))
+        if daily.id in self._tasks:
+            task_old = self._tasks[daily.id]
+            await self._cancle_task(task_old)
+        self._tasks[daily.id] = task
 
     @daily.command(
         brief=_('Remove an daily game on current discord and channel.'),
@@ -168,8 +169,19 @@ class AlttprDefault(commands.Cog):
         task = self._tasks[ctx.guild.id]
         await self._cancle_task(task)
         del self._tasks[ctx.guild.id]
-        daily = await Daily.get(guild_id=ctx.guild.id)
+        daily = await Daily.get(id=ctx.guild.id)
         await daily.delete()
+
+    @daily.command(
+        brief=_('List all daily seeds.'),
+        help=_('List all daily seeds.'),
+        invoke_without_command=True,
+        pass_context=True
+    )
+    async def list(self, ctx):
+        daily = await Daily.get(id=ctx.guild.id)
+        await ctx.reply(_("This are all daily seeds, which will be rolled:")+" "+daily.seeds+" \n"+_("At currently:")
+                        +" "+daily.time)
 
 
 def setup(bot):

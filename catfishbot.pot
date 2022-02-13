@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-02-13 17:53+0100\n"
+"POT-Creation-Date: 2022-02-13 18:17+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -70,9 +70,22 @@ msgstr ""
 msgid "Start an daily game on current discord and channel."
 msgstr ""
 
-#: .\catfish_discord\cogs\alttprdefault.py:162
 #: .\catfish_discord\cogs\alttprdefault.py:163
+#: .\catfish_discord\cogs\alttprdefault.py:164
 msgid "Remove an daily game on current discord and channel."
+msgstr ""
+
+#: .\catfish_discord\cogs\alttprdefault.py:183
+msgid "This are all daily seeds, which will be rolled:"
+msgstr ""
+
+#: .\catfish_discord\cogs\alttprdefault.py:183
+msgid "At currently:"
+msgstr ""
+
+#: .\catfish_discord\cogs\alttprdefault.py:176
+#: .\catfish_discord\cogs\alttprdefault.py:177
+msgid "List all daily seeds."
 msgstr ""
 
 #: .\catfish_discord\cogs\alttprrace.py:48
