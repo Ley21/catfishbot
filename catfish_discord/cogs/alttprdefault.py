@@ -63,8 +63,8 @@ class AlttprDefault(commands.Cog):
     @commands.slash_command(
         description=_('Generate a seed from preset.'),
     )
-    async def spoiler(self, ctx, preset, hints=False):
-        await ctx.response.defer()
+    async def spoiler(self, inter, preset, hints=False):
+        await inter.response.defer()
         seed = await get_preset(preset, hints=hints, spoilers="on", allow_quickswap=True)
         if seed:
             emojis = self.bot.get_guild(emojis_guild_id).emojis
@@ -73,9 +73,9 @@ class AlttprDefault(commands.Cog):
             if optimize_spoiler:
                 spoiler_link = await write_progression_spoiler(seed)
                 embed.insert_field_at(0, name="Spoiler Log URL", value=spoiler_link, inline=False)
-            await ctx.send(embed=embed)
+            await inter.send(embed=embed)
         else:
-            await ctx.send(_("Seed could not be generated. Hint: Door randomizer are currently not working"))
+            await inter.send(_("Seed could not be generated. Hint: Door randomizer are currently not working"))
             return
 
     @commands.slash_command(
@@ -132,23 +132,23 @@ class AlttprDefault(commands.Cog):
                 await ctx.author.send(_('Multiworld Seed Information') + f": {multi['seed_info_url']}")
                 await ctx.send(_('Multiworld Room') + f": {multi['room_url']}")
 
-    @commands.slash_command(
-        description=_('Generate a mystery seed.')
-    )
-    async def multiworld(self, inter, users):
-        await inter.response.defer()
-        user_id_list = []
-        user_name_list = users.split(',')
-        async for member in inter.guild.fetch_members():
-            if member.display_name in user_name_list:
-                user_id_list.append(member.id)
-        configurations = []
-        for user_id in user_id_list:
-            user_game_config = await GameConfiguration.get_or_none(user_id=user_id).select_related()
-            yaml = base64.b64decode(user_game_config.config_file)
-            configurations.append(yaml)
-        # todo multiworld by yaml from database
-        await inter.send("fluff")
+    # @commands.slash_command(
+    #     description=_('Generate a mystery seed.')
+    # )
+    # async def multiworld(self, inter, users):
+    #     await inter.response.defer()
+    #     user_id_list = []
+    #     user_name_list = users.split(',')
+    #     async for member in inter.guild.fetch_members():
+    #         if member.display_name in user_name_list:
+    #             user_id_list.append(member.id)
+    #     configurations = []
+    #     for user_id in user_id_list:
+    #         user_game_config = await GameConfiguration.get_or_none(user_id=user_id).select_related()
+    #         yaml = base64.b64decode(user_game_config.config_file)
+    #         configurations.append(yaml)
+    #     # todo multiworld by yaml from database
+    #     await inter.send("fluff")
 
     @commands.command(
         brief=_('Save an multi world yaml file for an user'),
@@ -183,6 +183,60 @@ class AlttprDefault(commands.Cog):
         else:
             await ctx.send(_('File could not be found.'))
 
+    # @commands.slash_command(description=_("Daily Seed slash command"))
+    # async def daily(self, inter):
+    #     pass
+    #
+    # async def _cancle_task(self, task):
+    #     try:
+    #         task.cancel()
+    #         await task
+    #     except:
+    #         print("Exception ocurred")
+    #
+    # @daily.sub_command(
+    #     description=_('Start an daily game on current discord and channel.')
+    # )
+    # async def add(self, inter, time, seeds):
+    #     daily = await Daily.get_or_none(id=inter.guild.id)
+    #     if daily is None:
+    #         daily_seed = await Daily.update_or_create(id=inter.guild.id, channel_id=inter.channel.id, time=time,
+    #                                                   seeds=seeds)
+    #         daily = daily_seed[0]
+    #     else:
+    #         daily.channel_id = inter.channel.id
+    #         daily.seeds = seeds
+    #         daily.time = time
+    #         await daily.save()
+    #
+    #     await self._post_seed(inter.channel, seeds)
+    #     task = asyncio.create_task(self._daily_seed(daily.id, daily.channel_id, daily.time, daily.seeds))
+    #     if daily.id in self._tasks:
+    #         task_old = self._tasks[daily.id]
+    #         await self._cancle_task(task_old)
+    #     self._tasks[daily.id] = task
+    #
+    # @daily.sub_command(
+    #     description=_('Remove an daily game on current discord and channel.')
+    # )
+    # async def remove(self, ctx):
+    #     task = self._tasks[ctx.guild.id]
+    #     await self._cancle_task(task)
+    #     del self._tasks[ctx.guild.id]
+    #     daily = await Daily.get(id=ctx.guild.id)
+    #     await daily.delete()
+    #
+    # @daily.sub_command(
+    #     description=_('List all daily seeds.')
+    # )
+    # async def list(self, ctx):
+    #     daily = await Daily.get_or_none(id=ctx.guild.id)
+    #     if daily:
+    #         await ctx.reply(
+    #             _("This are all daily seeds, which will be rolled:") + " " + daily.seeds + " \n" + _("At currently:")
+    #             + " " + daily.time)
+    #     else:
+    #         await ctx.reply(_("No daily task is existing."))
 
 def validate_game(game):
     if game == 'alttp':
@@ -192,69 +246,7 @@ def validate_game(game):
     else:
         return False
 
-    @commands.group(pass_context=True, invoke_without_command=True)
-    async def daily(self, ctx):
-        if ctx.invoked.subcommand is None:
-            await self.bot.say(_("Invalid command, please use subcommands."))
 
-    async def _cancle_task(self, task):
-        try:
-            task.cancel()
-            await task
-        except:
-            print("Exception ocurred")
-
-
-    @daily.command(
-        brief=_('Start an daily game on current discord and channel.'),
-        help=_('Start an daily game on current discord and channel.'),
-        invoke_without_command=True,
-        pass_context=True
-    )
-    async def add(self, ctx, time, seeds):
-        daily = await Daily.get_or_none(id=ctx.guild.id)
-        if daily is None:
-            daily_seed = await Daily.update_or_create(id=ctx.guild.id, channel_id=ctx.channel.id, time=time, seeds=seeds)
-            daily = daily_seed[0]
-        else:
-            daily.channel_id = ctx.channel.id
-            daily.seeds = seeds
-            daily.time = time
-            await daily.save()
-
-        await self._post_seed(ctx.channel, seeds)
-        task = asyncio.create_task(self._daily_seed(daily.id, daily.channel_id, daily.time, daily.seeds))
-        if daily.id in self._tasks:
-            task_old = self._tasks[daily.id]
-            await self._cancle_task(task_old)
-        self._tasks[daily.id] = task
-
-    @daily.command(
-        brief=_('Remove an daily game on current discord and channel.'),
-        help=_('Remove an daily game on current discord and channel.'),
-        invoke_without_command=True,
-        pass_context=True
-    )
-    async def remove(self, ctx):
-        task = self._tasks[ctx.guild.id]
-        await self._cancle_task(task)
-        del self._tasks[ctx.guild.id]
-        daily = await Daily.get(id=ctx.guild.id)
-        await daily.delete()
-
-    @daily.command(
-        brief=_('List all daily seeds.'),
-        help=_('List all daily seeds.'),
-        invoke_without_command=True,
-        pass_context=True
-    )
-    async def list(self, ctx):
-        daily = await Daily.get_or_none(id=ctx.guild.id)
-        if daily:
-            await ctx.reply(_("This are all daily seeds, which will be rolled:")+" "+daily.seeds+" \n"+_("At currently:")
-                        +" "+daily.time)
-        else:
-            await ctx.reply(_("No daily task is existing."))
 
 
 def setup(bot):
