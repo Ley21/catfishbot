@@ -1,11 +1,8 @@
 customizer: true
-goal_name: fadkeys
-randomizer: alttpr
-description: "AD Keys, but the Castle Tower Keys are in Castle Tower."
+goal_name: kentaru
 settings:
-  notes: "All Dungeons Keysanity but small keys are in Castle Tower."
-  allow_quickswap: true
   accessibility: items
+  allow_quickswap: false
   crystals:
     ganon: '7'
     tower: '7'
@@ -25,7 +22,6 @@ settings:
     canSuperSpeed: false
     canWaterFairyRevive: false
     canWaterWalk: false
-    customPrizePacks: false
     drop:
       count:
         ArrowRefill10: 3
@@ -112,7 +108,7 @@ settings:
         HeartContainer: 1
         Hookshot: 1
         IceRod: 1
-        KeyA1: 0
+        KeyA1: 2
         KeyA2: 4
         KeyD1: 6
         KeyD2: 1
@@ -281,31 +277,23 @@ settings:
     - auto_fill
     stun:
     - auto_fill
-  dungeon_items: full
-  enemizer:
-    boss_shuffle: none
-    enemy_damage: default
-    enemy_health: default
-    enemy_shuffle: none
-    pot_shuffle: 'off'
+  dungeon_items: standard
   eq:
   - BossHeartContainer
   - BossHeartContainer
   - BossHeartContainer
   glitches: none
   goal: dungeons
-  hints: 'on'
+  hints: 'off'
   item:
     functionality: normal
     pool: normal
   item_placement: advanced
-  l:
-    Q2FzdGxlIFRvd2VyIC0gRGFyayBNYXplOjE=: KeyA1:1
-    Q2FzdGxlIFRvd2VyIC0gUm9vbSAwMzox: KeyA1:1
+  l: {}
   lang: en
   mode: open
-  name: ''
+  name: Kentaru
   notes: ''
   spoilers: 'off'
-  tournament: false
-  weapons: randomized
+  tournament: true
+  weapons: swordless
