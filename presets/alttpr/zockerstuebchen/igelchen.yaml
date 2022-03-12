@@ -290,9 +290,7 @@ settings:
   lang: en
   mode: open
   name: Igelchen
-  notes: "Beim Igelchen Seed gibt es mehrere M\xC3\xB6glichkeiten das Spiel zu beenden.\
-    - Sammle 20/25 Triforce-Splitter\n\n- Ziehe das Master Sword Pedestal\
-    - besiegen Ganon"
+  notes: "Beim Igelchen Seed gibt es mehrere Moeglichkeiten das Spiel zu beenden. \n\n- Sammle 20/25 Triforce-Splitter - Ziehe das Master Sword Pedestal - Besiegen Ganon -"
   spoilers: 'off'
   tournament: true
   weapons: randomized
