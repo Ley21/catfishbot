@@ -30,10 +30,10 @@ class AlttprDefault(commands.Cog):
         dailys = await Daily.all()
 
         for daily in dailys:
-            task = asyncio.create_task(self._daily_seed(daily.id, daily.channel_id, daily.time, daily.seeds))
+            task = asyncio.create_task(self._daily_seed(daily.id, daily.channel_id, daily.time, daily.seeds, daily.last_seed))
             self._tasks[daily.id] = task
 
-    async def _daily_seed(self, guild_id, channel_id, time, seeds):
+    async def _daily_seed(self, guild_id, channel_id, time, seeds, last_seed):
         guild = self.bot.get_guild(guild_id)
         channel = guild.get_channel(channel_id)
         first_time = True
@@ -47,13 +47,20 @@ class AlttprDefault(commands.Cog):
                 first_time = False
             else:
                 await asyncio.sleep(86400)
-            await self._post_seed(channel, seeds)
+            await self._post_seed(guild_id, channel, seeds)
 
-    async def _post_seed(self, channel, seeds):
+    async def _post_seed(self, guild_id, channel, seeds, last_seed):
         emojis = self.bot.get_guild(emojis_guild_id).emojis
         now = datetime.datetime.now(tz)
         seed_list = seeds.split(',')
-        random_seed = random.choice(seed_list)
+        random_seed = last_seed
+        while last_seed == random_seed:
+            random_seed = random.choice(seed_list)
+
+        daily = await Daily.get(id=guild_id)
+        daily.last_seed = random_seed
+        await daily.save()
+
         seed = await get_preset(random_seed, hints=False, spoilers="off", allow_quickswap=True)
         embed = await get_embed(emojis, seed, _("Daily Challenge: ") + f'{now.day}.{now.month}.{now.year} - {random_seed}')
         await channel.send(embed=embed)

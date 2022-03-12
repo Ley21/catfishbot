@@ -53,3 +53,4 @@ class Daily(Model):
     channel_id = fields.IntField()
     time = fields.TextField()
     seeds = fields.TextField()
+    last_seed = fields.TextField(default="")
